@@ -45,8 +45,8 @@ public class ClienteModel {
     private String telefone;
 
     @Column(name = "email",length = 255, nullable = false, unique = true)
-    @Email(message = "O E-mail informado tem que ser válido")
-    @NotNull(message = "O campo tem que ser preenchido obrigatório.")
+    @Email(message = "O E-mail informado precisa ser válido")
+    @NotNull(message = "O campo tem que ser preenchido obrigatóriamente.")
     @NotBlank(message = "O campo não poderá ficar vazio")
     private String email;
 
