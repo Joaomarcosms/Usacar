@@ -1,10 +1,12 @@
 package br.com.usacar.vendas.model;
 
+import br.com.usacar.vendas.rest.dto.VendaDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
 
@@ -43,5 +45,10 @@ public class VendaModel {
     @Column(name = "vendedorId", nullable = false)
     @NotNull(message = "O campo é obrigatório")
     private int vendedorId;
+
+    public VendaDTO toDTO(){
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(this, VendaDTO.class);
+    }
 
 }

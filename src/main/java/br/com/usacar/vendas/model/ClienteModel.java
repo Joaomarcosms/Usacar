@@ -1,5 +1,6 @@
 package br.com.usacar.vendas.model;
 
+import br.com.usacar.vendas.rest.dto.ClienteDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.br.CPF;
+import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDate;
@@ -56,5 +58,12 @@ public class ClienteModel {
     @NotBlank(message = "O campo não poderá ficar vazio")
     private LocalDate dataCadastro;
 
+    /*
+    Converte o ClienteModel para ClienteDTO
+     */
 
+    public ClienteDTO toDTO() {
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(this, ClienteDTO.class);
+    }
 }

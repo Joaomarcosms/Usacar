@@ -16,7 +16,4 @@ public interface CarroRepository extends JpaRepository<CarroModel, Integer> {
 
     List<CarroModel> findByModeloId(Integer pModeloId);
 
-
-
-
 }

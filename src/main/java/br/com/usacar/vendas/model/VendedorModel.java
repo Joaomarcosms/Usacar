@@ -1,5 +1,6 @@
 package br.com.usacar.vendas.model;
 
+import br.com.usacar.vendas.rest.dto.VendedorDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.br.CPF;
+import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
 
@@ -60,4 +62,9 @@ public class VendedorModel {
     @NotNull(message = "O campo é obrigatório")
     @NotBlank(message = "O campo não pode ser vazio")
     private String senha;
+
+    public VendedorDTO toDTO(){
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(this, VendedorDTO.class);
+    }
 }

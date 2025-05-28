@@ -2,12 +2,14 @@ package br.com.usacar.vendas.model;
 
 
 
+import br.com.usacar.vendas.rest.dto.CarroDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
 @Data
@@ -58,4 +60,9 @@ public class CarroModel {
     @Column(name = "statusId", nullable = false)
     @NotNull(message = "O campo é obrigatório")
     private int statusId;
+
+    public CarroDTO toDTO() {
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(this, CarroDTO.class);
+    }
 }
