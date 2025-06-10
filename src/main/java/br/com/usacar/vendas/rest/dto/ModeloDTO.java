@@ -6,6 +6,5 @@ public class ModeloDTO {
     private int marcaID;
 
 
-    public Integer getId() {
-    }
+
 }
