@@ -1,6 +1,8 @@
 package br.com.usacar.vendas.repository;
 
 import br.com.usacar.vendas.model.CarroModel;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -18,4 +20,5 @@ public interface CarroRepository extends JpaRepository<CarroModel, Integer> {
 
     List<CarroModel> findByModeloId(Integer pModeloId);
 
+    boolean existsByPlaca(@NotNull(message = "O campo é obrigatório") @NotBlank(message = "O campo não pode está vazio") String placa);
 }

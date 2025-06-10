@@ -67,4 +67,6 @@ public class VendedorModel {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(this, VendedorDTO.class);
     }
+
+
 }
