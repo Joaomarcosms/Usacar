@@ -40,23 +40,22 @@ public class ModeloService {
     @Transactional
     public ModeloDTO salvar(ModeloModel novoModelo) {
         try {
-            if (modeloRepository.existsById(novoModelo.getId())) {
-                throw new ConstraintException("Já existe um carro cadastrado com esta placa " + novoModelo.getId());
-            }
+            //Perguntar
+
             //Salvar o modelo na base de dados
             return modeloRepository.save(novoModelo).toDTO();
 
         } catch (DataIntegrityException e) {
-            throw new DataIntegrityException("Erro!! Não foi possivel salvar o veículo " + novoModelo.getId());
+            throw new DataIntegrityException("Erro!! Não foi possivel salvar o modelo " + novoModelo.getId());
         } catch (ConstraintException e) {
             if (e.getMessage() == null || e.getMessage().isBlank()) {
-                throw new ConstraintException("Erro de Restrição de integridade ao salvar o veículo " + novoModelo.getId());
+                throw new ConstraintException("Erro de Restrição de integridade ao salvar o modelo " + novoModelo.getId());
             }
             throw e;
         } catch (BusinessRuleException e) {
-            throw new BusinessRuleException("Erro!! Não foi possível salvar o veículo" + novoModelo.getId());
+            throw new BusinessRuleException("Erro!! Não foi possível salvar o modelo" + novoModelo.getId());
         } catch (SQLException e) {
-            throw new SQLException("Erro!! Não foi possível salvar o veículo " + novoModelo.getId());
+            throw new SQLException("Erro!! Não foi possível salvar o modelo " + novoModelo.getId());
         }
     }
 
@@ -68,23 +67,23 @@ public class ModeloService {
     public ModeloDTO atualizar(ModeloModel modeloExistente) {
         try {
             if (!modeloRepository.existsById(modeloExistente.getId())) {
-                throw new ConstraintException("O veículo com essa placa " + modeloExistente.getId() + "não existe na base de dados");
+                throw new ConstraintException("O modelo que deseja " + modeloExistente.getId() + "não existe na base de dados");
             }
             return modeloRepository.save(modeloExistente).toDTO();
 
         } catch (DataIntegrityException e) {
-            throw new DataIntegrityException("Erro!! Não foi possível atualizar o veículo " + modeloExistente.getId());
+            throw new DataIntegrityException("Erro!! Não foi possível atualizar o modelo " + modeloExistente.getId());
         } catch (ConstraintException e) {
             if (e.getMessage() == null || e.getMessage().isBlank()) {
-                throw new ConstraintException("Erro ao atualizar o veículo " + modeloExistente.getId());
+                throw new ConstraintException("Erro ao atualizar o modelo " + modeloExistente.getId());
             }
             throw e;
         } catch (BusinessRuleException e) {
-            throw new BusinessRuleException("Erro!! Não foi possível atualizar o veículo " + modeloExistente.getId() + "Retrição de regra de negócio!");
+            throw new BusinessRuleException("Erro!! Não foi possível atualizar o modelo " + modeloExistente.getId() + "Retrição de regra de negócio!");
         } catch (SQLException e) {
-            throw new SQLException("Erro!! Não foi possível atualizar o veículo " + modeloExistente.getId() +  "Falha na conexão com o banco de dados");
+            throw new SQLException("Erro!! Não foi possível atualizar o modelo " + modeloExistente.getId() +  "Falha na conexão com o banco de dados");
         } catch (ObjectNotFoundException e) {
-            throw new ObjectNotFoundException("Erro!! Não foi possível atualizar o veículo " + modeloExistente.getId() +  "Não encontrado no banco de dados!");
+            throw new ObjectNotFoundException("Erro!! Não foi possível atualizar o modelo " + modeloExistente.getId() +  "Não encontrado no banco de dados!");
         }
     }
 
@@ -96,23 +95,23 @@ public class ModeloService {
     public void deletar(ModeloModel modeloExistente) {
         try {
             if (!modeloRepository.existsById(modeloExistente.getId())) {
-                throw new ConstraintException("Veículo inexistente na base de dados " );
+                throw new ConstraintException("Modelo inexistente na base de dados " );
             }
             modeloRepository.delete(modeloExistente);
 
         } catch (DataIntegrityException e){
-            throw new DataIntegrityException("Erro!! Não foi possível deletar o veículo " + modeloExistente.getId());
+            throw new DataIntegrityException("Erro!! Não foi possível deletar o modelo " + modeloExistente.getId());
         } catch (ConstraintException e){
             if (e.getMessage() == null || e.getMessage().isBlank()){
-                throw new ConstraintException("Erro!! Não foi possível deletar o veículo " + modeloExistente.getId() + "Restrição de integridade de dados");
+                throw new ConstraintException("Erro!! Não foi possível deletar o modelo " + modeloExistente.getId() + "Restrição de integridade de dados");
             }
             throw e;
         } catch (BusinessRuleException e){
-            throw new BusinessRuleException("Erro! Não foi possível deletar o veículo " + modeloExistente.getId() + "Violão da regra de negócio!");
+            throw new BusinessRuleException("Erro! Não foi possível deletar o modelo " + modeloExistente.getId() + "Violão da regra de negócio!");
         } catch (SQLException e){
-            throw new SQLException("Erro! Não foi possível atualizar o deletar " + modeloExistente.getId() + "Falha na conexão com o banco de dados");
+            throw new SQLException("Erro! Não foi possível deletar o modelo que deseja! " + modeloExistente.getId() + "Falha na conexão com o banco de dados");
         } catch (ObjectNotFoundException e){
-            throw new ObjectNotFoundException("Erro! Não foi possível deletar o veículo " + modeloExistente.getId() + "Não encontrado no banco de dados!");
+            throw new ObjectNotFoundException("Erro! Não foi possível deletar o modelo " + modeloExistente.getId() + "Não encontrado no banco de dados!");
         }
     }
 }

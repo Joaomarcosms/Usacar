@@ -53,9 +53,6 @@ public class ClienteModel {
     private String email;
 
     @Column(name = "dataCadastro", nullable = false)
-    @Past(message = "A data informada não deverá ser menor que a data atual")
-    @NotNull(message = "O campo tem que ser preenchido obrigatório.")
-    @NotBlank(message = "O campo não poderá ficar vazio")
     private LocalDate dataCadastro;
 
     /*

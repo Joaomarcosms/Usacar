@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface CarroRepository extends JpaRepository<CarroModel, Integer> {
-    Optional<CarroModel> findByAnoFabricacao(LocalDate pAnoFabricacao);
+    Optional<CarroModel> findByAnoFabricacao(int pAnoFabricacao);
 
     Optional<CarroModel> findByPlaca(String pPlaca);
 
@@ -20,5 +20,5 @@ public interface CarroRepository extends JpaRepository<CarroModel, Integer> {
 
     List<CarroModel> findByModeloId(Integer pModeloId);
 
-    boolean existsByPlaca(@NotNull(message = "O campo é obrigatório") @NotBlank(message = "O campo não pode está vazio") String placa);
+    boolean existsByPlaca(String pPlaca);
 }

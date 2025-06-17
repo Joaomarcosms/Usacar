@@ -19,7 +19,7 @@ public class ClienteService {
 
     @Transactional(readOnly = true)
     public ClienteDTO obterPorId(int id) {
-        ClienteModel cliente = clienteRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Cliente com " + id + "não encontrado"));
+        ClienteModel cliente = clienteRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Cliente com " + id + " não encontrado"));
         return cliente.toDTO();
     }
 

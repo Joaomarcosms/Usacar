@@ -11,5 +11,5 @@ public interface ModeloRepository extends JpaRepository<ModeloModel, Integer> {
     List<ModeloModel> findByNome (String pNome);
 
 
-    boolean existsByNome();
+    boolean existsByNome(String pNome);
 }

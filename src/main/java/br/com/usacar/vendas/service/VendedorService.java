@@ -34,7 +34,7 @@ public class VendedorService {
     public VendedorDTO salvar(VendedorModel novoVendedor){
         try {
             //Caso ocorra uma tentativa de salvar um novo vendedor com um cpf já existente
-            if(vendedorRepository.existByCpf(novoVendedor.getCpf())){
+            if(vendedorRepository.existsByCpf(novoVendedor.getCpf())){
                 throw new ConstraintException("Já existe um vendedor com esse CPF " + novoVendedor.getCpf());
             }
 
@@ -65,7 +65,7 @@ public class VendedorService {
     public VendedorDTO atualizar(VendedorModel vendedorExistente){
         try {
             //Caso ocorra uma tentativa de salvar um vendedor que não existe utilizando um Cpf.
-            if(!vendedorRepository.existByCpf(vendedorExistente.getCpf())){
+            if(!vendedorRepository.existsByCpf(vendedorExistente.getCpf())){
                 throw new ConstraintException("O Cliente com esse Cpf " + vendedorExistente.getCpf() + " não existe na base de dados!");
             }
 
@@ -97,11 +97,13 @@ public class VendedorService {
 
         try {
             //Caso ocorra uma tentativa de deletar um vendedor que não existe utilizando o id.
-            if(!vendedorRepository.existByCpf(vendedorExistente.getCpf())){
+            if(!vendedorRepository.existsById(vendedorExistente.getId())){
                 throw new ConstraintException("Vendedor inexistente na base de dados!");
             }
+
             //Deletar o vendedor na base de dados.
             vendedorRepository.delete(vendedorExistente);
+
         } catch (DataIntegrityException e){
             throw new DataIntegrityException("Erro! Não foi possível deletar o cliente " + vendedorExistente.getNome() + " !");
         } catch (ConstraintException e){

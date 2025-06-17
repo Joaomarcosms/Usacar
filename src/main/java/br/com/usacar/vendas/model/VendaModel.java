@@ -1,6 +1,7 @@
 package br.com.usacar.vendas.model;
 
 import br.com.usacar.vendas.rest.dto.VendaDTO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ public class VendaModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "dataVenda", nullable = false)
     @NotNull(message = "O campo é obrigatório")
     private LocalDate dataVenda;

@@ -23,12 +23,12 @@ public class CorService {
     }
 
     /*
-     *Aqui irá obter a lista de todos os carros cadastrados
-     * @Return irá retornar a lista dos carros cadastrados
+     *Aqui irá obter a lista de todas as cadastrados
+     * @Return irá retornar a lista das cores cadastradas
      */
 
     @Transactional(readOnly = true)
-    public List<CorDTO> obterTodos(){
+    public List<CorDTO> obterTodas(){
         List<CorModel> cores = corRepository.findAll();
         return cores.stream().map(cor -> cor.toDTO() ).collect(Collectors.toList());
     }
@@ -41,23 +41,23 @@ public class CorService {
     public CorDTO salvar(CorModel novaCor){
         try {
             if (corRepository.existsByNome(novaCor.getNome())) {
-                throw new ConstraintException("Já existe um carro cadastrado com esta placa " + novaCor.getNome());
+                throw new ConstraintException("Já existe uma cor cadastrada " + novaCor.getNome());
             }
 
             //Salvar a cor na base de dados.
             return corRepository.save(novaCor).toDTO();
 
         } catch (DataIntegrityException e){
-            throw new DataIntegrityException("Erro!! Não foi possivel salvar o veículo " + novaCor.getNome());
+            throw new DataIntegrityException("Erro!! Não foi possivel salvar a cor desejada " + novaCor.getNome());
         } catch (ConstraintException e){
             if(e.getMessage() == null || e.getMessage().isBlank()){
-                throw new ConstraintException("Erro de Restrição de integridade ao salvar o veículo " + novaCor.getNome());
+                throw new ConstraintException("Erro de Restrição de integridade ao salvar a cor desejada" + novaCor.getNome());
             }
             throw e;
         } catch (BusinessRuleException e){
-            throw new BusinessRuleException("Erro!! Não foi possível salvar o veículo" + novaCor.getNome());
+            throw new BusinessRuleException("Erro!! Não foi possível salvar a cor desejada" + novaCor.getNome());
         } catch (SQLException e){
-            throw new SQLException("Erro!! Não foi possível salvar o veículo " + novaCor.getNome());
+            throw new SQLException("Erro!! Não foi possível salvar a cor desejada" + novaCor.getNome());
         }
     }
 
@@ -69,24 +69,24 @@ public class CorService {
     public CorDTO atualizar(CorModel corExistente){
         try {
             //Caso ocorra uma tentativa de salvar uma cor utilizando o nome.
-            if(!corRepository.existsByNome(corExistente.getNome())){
-                throw new ConstraintException("O veículo com essa placa " + corExistente.getNome() + "não existe na base de dados");
+            if(!corRepository.existsById(corExistente.getId())){
+                throw new ConstraintException("A cor desejada " + corExistente.getNome() + " não existe na base de dados");
             }
             return corRepository.save(corExistente).toDTO();
         } catch (DataIntegrityException e){
-            throw new DataIntegrityException("Erro!! Não foi possível atualizar o veículo " + corExistente.getNome());
+            throw new DataIntegrityException("Erro!! Não foi possível atualizar a cor desejada " + corExistente.getNome());
         } catch (ConstraintException e){
             //Relança a mensagem original ou adiciona context
             if(e.getMessage() == null || e.getMessage().isBlank()){
-                throw new ConstraintException("Erro ao atualizar o veículo " + corExistente.getNome());
+                throw new ConstraintException("Erro ao atualizar a cor desejada " + corExistente.getNome());
             }
             throw e;
         } catch (BusinessRuleException e){
-            throw new BusinessRuleException("Erro!! Não foi possível atualizar o veículo " + corExistente.getNome() + "Retrição de regra de negócio!");
+            throw new BusinessRuleException("Erro!! Não foi possível atualizar a cor desejada" + corExistente.getNome() + " Retrição de regra de negócio!");
         } catch (SQLException e){
-            throw new SQLException("Erro!! Não foi possível atualizar o veículo " + corExistente.getNome() +  "Falha na conexão com o banco de dados");
+            throw new SQLException("Erro!! Não foi possível atualizar a cor desejada " + corExistente.getNome() +  " Falha na conexão com o banco de dados");
         } catch (ObjectNotFoundException e){
-            throw new ObjectNotFoundException("Erro!! Não foi possível atualizar o veículo " + corExistente.getNome() +  "Não encontrado no banco de dados!");
+            throw new ObjectNotFoundException("Erro!! Não foi possível atualizar a cor desejada" + corExistente.getNome() +  " Não encontrado no banco de dados!");
         }
 
     }

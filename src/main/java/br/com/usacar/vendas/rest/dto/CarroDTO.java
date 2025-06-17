@@ -8,9 +8,9 @@ import java.time.LocalDate;
 public class CarroDTO {
     private int id;
 
-    private LocalDate anoFabricacao;
+    private int anoFabricacao;
 
-    private LocalDate anoModelo;
+    private int anoModelo;
 
     private String placa;
 

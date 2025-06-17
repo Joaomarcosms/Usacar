@@ -1,10 +1,9 @@
 package br.com.usacar.vendas.service;
 
 import br.com.usacar.vendas.exception.*;
-import br.com.usacar.vendas.model.CarroModel;
 import br.com.usacar.vendas.model.VendaModel;
 import br.com.usacar.vendas.repository.VendaRepository;
-import br.com.usacar.vendas.rest.dto.CarroDTO;
+
 import br.com.usacar.vendas.rest.dto.VendaDTO;
 import org.hibernate.validator.constraintvalidators.RegexpURLValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +18,7 @@ public class VendaService {
 
     @Autowired
     private VendaRepository vendaRepository;
-    @Autowired
-    private RegexpURLValidator regexpURLValidator;
+    
 
     @Transactional(readOnly = true)
     public VendaDTO obterPorId(int id){
@@ -72,8 +70,8 @@ public class VendaService {
     @Transactional
     public VendaDTO atualizar(VendaModel vendaExistente){
         try {
-            if(vendaRepository.existsById(vendaExistente.getId())){
-                throw new ConstraintException("A venda solicitada " + vendaExistente.getId() + "não existe na base de dados");
+            if(!vendaRepository.existsById(vendaExistente.getId())){
+                throw new ConstraintException("A venda solicitada " + vendaExistente.getId() + " não existe na base de dados");
             }
 
             return vendaRepository.save(vendaExistente).toDTO();
@@ -101,7 +99,7 @@ public class VendaService {
     @Transactional
     public void deletar(VendaModel vendaExistente){
         try {
-            if(vendaRepository.existsById(vendaExistente.getId())){
+            if(!vendaRepository.existsById(vendaExistente.getId())){
                 throw new ConstraintException("Venda inexistente na base de dados " );
 
             }

@@ -3,6 +3,7 @@ package br.com.usacar.vendas.model;
 
 
 import br.com.usacar.vendas.rest.dto.CarroDTO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,13 +24,15 @@ public class CarroModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+
     @Column(name = "anoFabricacao", nullable = false)
     @NotNull(message = "O campo é obrigatório")
-    private LocalDate anoFabricacao;
+    private int anoFabricacao;
+
 
     @Column(name = "anoModelo", nullable = false)
     @NotNull(message = "O campo é obrigatório")
-    private LocalDate anoModelo;
+    private int anoModelo;
 
     @Column(name = "placa", nullable = false)
     @NotNull(message = "O campo é obrigatório")
@@ -45,6 +48,7 @@ public class CarroModel {
     @NotNull(message = "O campo é obrigatório")
     private double precoCompra;
 
+    @JsonFormat(pattern = "yyy-MM-dd")
     @Column(name = "dataCadastro", nullable = false)
     @NotNull(message = "O campo é obrigatório")
     private LocalDate dataCadastro;

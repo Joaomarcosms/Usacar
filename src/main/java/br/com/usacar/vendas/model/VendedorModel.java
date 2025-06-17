@@ -55,7 +55,7 @@ public class VendedorModel {
     @NotNull(message = "O campo é obrigatório")
     private LocalDate dataAdmissao;
 
-    @Column(name = "dataDemissao", nullable = false)
+    @Column(name = "dataDemissao", nullable = true)
     private LocalDate dataDemissao;
 
     @Column(name = "senha", nullable = false)

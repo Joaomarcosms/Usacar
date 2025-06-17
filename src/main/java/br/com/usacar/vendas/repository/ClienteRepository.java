@@ -20,7 +20,6 @@ public interface ClienteRepository extends JpaRepository<ClienteModel, Integer> 
 
     Optional<ClienteModel> findByTelefone(String pTelefone);
 
-    boolean existsByCpf(@CPF @Length(min = 11, max = 11, message = "O cpf deve conter 11 caracteres")
-                        @NotNull(message = "O campo tem que ser preenchido obrigatório.")
-                        @NotBlank(message = "O campo não poderá ficar vazio") String cpf);
+    boolean existsByCpf(String pCpf);
+
 }

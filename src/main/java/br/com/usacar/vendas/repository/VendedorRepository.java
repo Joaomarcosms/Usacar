@@ -18,5 +18,5 @@ public interface VendedorRepository extends JpaRepository<VendedorModel, Integer
     Optional<VendedorModel> findByCpfOrTelefoneOrEmail (String pCpf, String pTelefone, String pEmail);
 
 
-    boolean existByCpf(@CPF @Length(min = 11, max = 11, message = "O CPF deve conter 11 caracteres") @NotNull(message = "O campo é obrigatório") @NotBlank(message = "O campo não pode está vazio") String cpf);
+    boolean existsByCpf( String pCpf);
 }

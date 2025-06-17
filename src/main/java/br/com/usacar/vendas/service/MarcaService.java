@@ -28,7 +28,7 @@ public class MarcaService {
      */
 
     @Transactional(readOnly = true)
-    public List<MarcaDTO> obterTodos() {
+    public List<MarcaDTO> obterTodas() {
         List<MarcaModel> marcas = marcaRepository.findAll();
         return marcas.stream().map(marca -> marca.toDTO()).collect(Collectors.toList());
     }
@@ -102,7 +102,7 @@ public class MarcaService {
     @Transactional
     public void deletar(MarcaModel marcaExistente) {
         try {
-            if(marcaRepository.existsByNome(marcaExistente.getNome())){
+            if(!marcaRepository.existsById(marcaExistente.getId())){
                 throw new ConstraintException("Marca inexistente na base de dados " );
             }
 
