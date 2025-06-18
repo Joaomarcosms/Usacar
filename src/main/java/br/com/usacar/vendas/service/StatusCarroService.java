@@ -110,7 +110,7 @@ public class StatusCarroService {
             }
             throw e;
         } catch (BusinessRuleException e){
-            throw new BusinessRuleException("Erro! Não foi possível deletar o Status " + statusExistente.getId() + "Violão da regra de negócio!");
+            throw new BusinessRuleException("Erro! Não foi possível deletar o Status " + statusExistente.getId() + "Violação da regra de negócio!");
         } catch (SQLException e){
             throw new SQLException("Erro! Não foi possível deletar o Status" + statusExistente.getId() + "Falha na conexão com o banco de dados");
         } catch (ObjectNotFoundException e){

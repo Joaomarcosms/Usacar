@@ -107,18 +107,18 @@ public class CorService {
             }
             corRepository.delete(corExistente);
         } catch (DataIntegrityException e){
-            throw new DataIntegrityException("Erro!! Não foi possível deletar o veículo " + corExistente.getNome());
+            throw new DataIntegrityException("Erro!! Não foi possível deletar a cor desejada " + corExistente.getNome());
         } catch (ConstraintException e){
             if(e.getMessage() == null || e.getMessage().isBlank()){
-                throw new ConstraintException("Erro!! Não foi possível deletar o veículo " + corExistente.getNome() + "Restrição de integridade de dados");
+                throw new ConstraintException("Erro!! Não foi possível deletar a cor desejada " + corExistente.getNome() + "Restrição de integridade de dados");
             }
             throw e;
         } catch (BusinessRuleException e){
-            throw new BusinessRuleException("Erro! Não foi possível deletar o veículo " + corExistente.getNome() + "Violão da regra de negócio!");
+            throw new BusinessRuleException("Erro! Não foi possível deletar a cor desejada " + corExistente.getNome() + "Viola da regra de negócio!");
         } catch(SQLException e){
-            throw new SQLException("Erro! Não foi possível atualizar o deletar " + corExistente.getNome() + "Falha na conexão com o banco de dados");
+            throw new SQLException("Erro! Não foi possível atualizar a cor desejada " + corExistente.getNome() + "Falha na conexão com o banco de dados");
         } catch (ObjectNotFoundException e){
-            throw new ObjectNotFoundException("Erro! Não foi possível deletar o veículo " + corExistente.getNome() + "Não encontrado no banco de dados!");
+            throw new ObjectNotFoundException("Erro! Não foi possível deletar a cor desejada" + corExistente.getNome() + "Não encontrado no banco de dados!");
         }
     }
 }

@@ -44,7 +44,7 @@ public class CarroService {
     public CarroDTO salvar(CarroModel novoCarro){
         try {
             if(carroRepository.existsByPlaca(novoCarro.getPlaca())){
-                throw new ConstraintException("Já existe um carro cadastrado com esta placa " + novoCarro.getPlaca());
+                throw new ConstraintException("Já existe um veículo cadastrado com esta placa " + novoCarro.getPlaca());
             }
             //Salvar o carro na base de dados.
             return carroRepository.save(novoCarro).toDTO();
@@ -116,9 +116,9 @@ public class CarroService {
             }
             throw e;
         } catch (BusinessRuleException e){
-            throw new BusinessRuleException("Erro! Não foi possível deletar o veículo " + carroExistente.getPlaca() + "Violão da regra de negócio!");
+            throw new BusinessRuleException("Erro! Não foi possível deletar o veículo " + carroExistente.getPlaca() + "Violãção da regra de negócio!");
         } catch (SQLException e){
-            throw new SQLException("Erro! Não foi possível atualizar o deletar " + carroExistente.getPlaca() + "Falha na conexão com o banco de dados");
+            throw new SQLException("Erro! Não foi possível  deletar o veículo " + carroExistente.getPlaca() + "Falha na conexão com o banco de dados");
         } catch (ObjectNotFoundException e){
             throw new ObjectNotFoundException("Erro! Não foi possível deletar o veículo " + carroExistente.getPlaca() + "Não encontrado no banco de dados!");
         }

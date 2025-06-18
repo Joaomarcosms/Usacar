@@ -41,23 +41,23 @@ public class MarcaService {
     public MarcaDTO salvar(MarcaModel novaMarca) {
         try {
             if(marcaRepository.existsByNome(novaMarca.getNome())){
-                throw new ConstraintException("Já existe um carro cadastrado com esta placa " + novaMarca.getNome());
+                throw new ConstraintException("Já existe uma marca cadastrada em sistema " + novaMarca.getNome());
             }
             //Retorna os dados que foram salvos
             return marcaRepository.save(novaMarca).toDTO();
 
         } catch (DataIntegrityException e) {
-            throw new DataIntegrityException("Erro!! Não foi possivel salvar o veículo " + novaMarca.getNome());
+            throw new DataIntegrityException("Erro!! Não foi possivel salvar a marca " + novaMarca.getNome());
 
         } catch (ConstraintException e) {
             if(e.getMessage() == null || e.getMessage().isBlank()){
-                throw new ConstraintException("Erro de Restrição de integridade ao salvar o veículo " + novaMarca.getNome());
+                throw new ConstraintException("Erro de Restrição de integridade ao salvar  a marca " + novaMarca.getNome());
             }
             throw e;
         } catch (BusinessRuleException e){
-            throw new BusinessRuleException("Erro!! Não foi possível salvar o veículo" + novaMarca.getNome() );
+            throw new BusinessRuleException("Erro!! Não foi possível salvar  a marca" + novaMarca.getNome() );
         } catch (SQLException e){
-            throw new SQLException("Erro!! Não foi possível salvar o veículo " + novaMarca.getNome());
+            throw new SQLException("Erro!! Não foi possível salvar  a marca " + novaMarca.getNome());
         }
 
 
@@ -71,24 +71,24 @@ public class MarcaService {
             //Caso ocorra uma tentativa de salvar uma marca que não existe utilizando o nome.
             try {
                 if(marcaRepository.existsByNome(marcaExistente.getNome())){
-                    throw new ConstraintException("O veículo com essa placa " + marcaExistente.getNome() + "não existe na base de dados");
+                    throw new ConstraintException("A marca informada" + marcaExistente.getNome() + " não existe na base de dados");
                 }
                 //Retorna a lista atualizada
                 return marcaRepository.save(marcaExistente).toDTO();
 
             } catch (DataIntegrityException e) {
-                throw new DataIntegrityException("Erro!! Não foi possível atualizar o veículo " + marcaExistente.getNome());
+                throw new DataIntegrityException("Erro!! Não foi possível atualizar  a marca" + marcaExistente.getNome());
             } catch (ConstraintException e) {
                 if(e.getMessage() == null || e.getMessage().isBlank()){
-                    throw new ConstraintException("Erro ao atualizar o veículo " + marcaExistente.getNome());
+                    throw new ConstraintException("Erro ao atualizar  a marca " + marcaExistente.getNome());
                 }
                 throw e;
             } catch (BusinessRuleException e){
-                throw new BusinessRuleException("Erro!! Não foi possível atualizar o veículo " + marcaExistente.getNome() + "Retrição de regra de negócio!");
+                throw new BusinessRuleException("Erro!! Não foi possível atualizar  a marca " + marcaExistente.getNome() + "Retrição de regra de negócio!");
             } catch (SQLException e) {
-                throw new SQLException("Erro!! Não foi possível atualizar o veículo " + marcaExistente.getNome() +  "Falha na conexão com o banco de dados");
+                throw new SQLException("Erro!! Não foi possível atualizar  a marca" + marcaExistente.getNome() +  "Falha na conexão com o banco de dados");
             } catch (ObjectNotFoundException e) {
-                throw new ObjectNotFoundException("Erro!! Não foi possível atualizar o veículo " + marcaExistente.getNome() +  "Não encontrado no banco de dados!");
+                throw new ObjectNotFoundException("Erro!! Não foi possível atualizar  a marca " + marcaExistente.getNome() +  "Não encontrado no banco de dados!");
             }
 
 
@@ -108,20 +108,20 @@ public class MarcaService {
             marcaRepository.delete(marcaExistente);
 
         } catch (DataIntegrityException e) {
-            throw new DataIntegrityException("Erro!! Não foi possível deletar o veículo " + marcaExistente.getNome());
+            throw new DataIntegrityException("Erro!! Não foi possível deletar  a marca" + marcaExistente.getNome());
         } catch (ConstraintException e) {
             if(e.getMessage() == null || e.getMessage().isBlank()){
-                throw new ConstraintException("Erro!! Não foi possível deletar o veículo " + marcaExistente.getNome() + "Restrição de integridade de dados");
+                throw new ConstraintException("Erro!! Não foi possível deletar  a marca " + marcaExistente.getNome() + "Restrição de integridade de dados");
             }
             throw e;
         } catch (BusinessRuleException e) {
-            throw new BusinessRuleException("Erro! Não foi possível deletar o veículo " + marcaExistente.getNome() + "Violão da regra de negócio!");
+            throw new BusinessRuleException("Erro! Não foi possível deletar  a marca " + marcaExistente.getNome() + "Violação da regra de negócio!");
 
         } catch (SQLException e){
-            throw new SQLException("Erro! Não foi possível atualizar o deletar " + marcaExistente.getNome() + "Falha na conexão com o banco de dados");
+            throw new SQLException("Erro! Não foi possível deletar  a marca " + marcaExistente.getNome() + "Falha na conexão com o banco de dados");
 
         } catch (ObjectNotFoundException e) {
-            throw new ObjectNotFoundException("Erro! Não foi possível deletar o veículo " + marcaExistente.getNome() + "Não encontrado no banco de dados!");
+            throw new ObjectNotFoundException("Erro! Não foi possível deletar  a marca " + marcaExistente.getNome() + "Não encontrado no banco de dados!");
 
         }
     }
