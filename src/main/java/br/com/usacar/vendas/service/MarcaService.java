@@ -14,9 +14,11 @@ import java.util.stream.Collectors;
 @Service
 public class MarcaService {
 
+    //Injeção automatica de dependencias
     @Autowired
     private MarcaRepository marcaRepository;
 
+    //Obtem por ID
     @Transactional(readOnly = true)
     public MarcaDTO obterPorId(int id) {
         MarcaModel marca = marcaRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Marca com " + id + "não encontrado"));
@@ -26,7 +28,6 @@ public class MarcaService {
     /*
     *Aqui irá obter a lista de marcas cadastradas em sistema
      */
-
     @Transactional(readOnly = true)
     public List<MarcaDTO> obterTodas() {
         List<MarcaModel> marcas = marcaRepository.findAll();
@@ -36,14 +37,13 @@ public class MarcaService {
     /*
     Irá salvar a marca de veículo na base de dados
      */
-
     @Transactional
     public MarcaDTO salvar(MarcaModel novaMarca) {
         try {
             if(marcaRepository.existsByNome(novaMarca.getNome())){
                 throw new ConstraintException("Já existe um carro cadastrado com esta placa " + novaMarca.getNome());
             }
-
+            //Retorna os dados que foram salvos
             return marcaRepository.save(novaMarca).toDTO();
 
         } catch (DataIntegrityException e) {
@@ -66,7 +66,6 @@ public class MarcaService {
     /*
      **Irá atualizar a marca na base de dados
      */
-
         @Transactional
         public MarcaDTO atualizar(MarcaModel marcaExistente) {
             //Caso ocorra uma tentativa de salvar uma marca que não existe utilizando o nome.
@@ -74,7 +73,7 @@ public class MarcaService {
                 if(marcaRepository.existsByNome(marcaExistente.getNome())){
                     throw new ConstraintException("O veículo com essa placa " + marcaExistente.getNome() + "não existe na base de dados");
                 }
-
+                //Retorna a lista atualizada
                 return marcaRepository.save(marcaExistente).toDTO();
 
             } catch (DataIntegrityException e) {
@@ -105,7 +104,7 @@ public class MarcaService {
             if(!marcaRepository.existsById(marcaExistente.getId())){
                 throw new ConstraintException("Marca inexistente na base de dados " );
             }
-
+            //Deleta da base de dados
             marcaRepository.delete(marcaExistente);
 
         } catch (DataIntegrityException e) {

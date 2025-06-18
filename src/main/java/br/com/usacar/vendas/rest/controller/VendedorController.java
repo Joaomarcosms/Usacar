@@ -3,6 +3,7 @@ package br.com.usacar.vendas.rest.controller;
 import br.com.usacar.vendas.model.VendedorModel;
 import br.com.usacar.vendas.rest.dto.VendedorDTO;
 import br.com.usacar.vendas.service.VendedorService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,10 +12,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.http.ResponseEntity.ok;
+
 @RestController
 @RequestMapping("/vendedor")
 public class VendedorController {
 
+    //Injeção de dependências automaticas
     @Autowired
     private VendedorService vendedorService;
 
@@ -30,7 +34,7 @@ public class VendedorController {
     @GetMapping
     public ResponseEntity<List<VendedorDTO>> obterTodos() {
         List<VendedorDTO> vendedorDTOList = vendedorService.obterTodos();
-        return ResponseEntity.ok(vendedorDTOList);
+        return ok(vendedorDTOList);
     }
 
     //Cadastrar novo vendedor na base de dados
@@ -51,6 +55,14 @@ public class VendedorController {
     @DeleteMapping()
     public ResponseEntity<String> deletar(@Valid @RequestBody VendedorModel vendedorExistente) {
         vendedorService.deletar(vendedorExistente);
-        return ResponseEntity.ok().body("Deletado com sucesso!!");
+        return ok().body("Deletado com sucesso!!");
     }
+
+    //Outro metodo de consulta de dados
+    @GetMapping("/outromedoto")
+    public ResponseEntity<String>obterVendedor(@RequestParam String nome,
+                                               @RequestParam(required = false )int id) {
+        return ResponseEntity.ok().body("Nome: " + nome + " ID: " + id);
+    }
+
 }

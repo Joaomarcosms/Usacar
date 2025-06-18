@@ -26,6 +26,7 @@ public class StatusCarroModel {
     @NotBlank(message = "O campo não pode está vazio")
     private String descricao;
 
+    //Conversão de Model para DTO
     public StatusCarroDTO toDTO(){
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(this,StatusCarroDTO.class);

@@ -55,10 +55,7 @@ public class ClienteModel {
     @Column(name = "dataCadastro", nullable = false)
     private LocalDate dataCadastro;
 
-    /*
-    Converte o ClienteModel para ClienteDTO
-     */
-
+    //Conversão de Model para DTO
     public ClienteDTO toDTO() {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(this, ClienteDTO.class);

@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @Service
 public class StatusCarroService {
 
+    //Injeção automatica de dependencias
     @Autowired
     private StatusCarroRepository statusCarroRepository;
 
@@ -47,7 +48,7 @@ public class StatusCarroService {
             //Salvar o status na base de dados.
             return statusCarroRepository.save(novoStatus).toDTO();
         } catch (DataIntegrityException e){
-            throw new DataIntegrityException("Erro!! Não foi possivel salvar esse Status " + novoStatus.getId());
+            throw new DataIntegrityException("Erro!! Não foi possivel salvar o Status " + novoStatus.getId());
         } catch (ConstraintException e){
             if (e.getMessage() == null || e.getMessage().isBlank()){
                 throw new ConstraintException("Erro de Restrição de integridade ao salvar o Status" + novoStatus.getId());
@@ -63,14 +64,13 @@ public class StatusCarroService {
     /*
      *Irá atualizar o Status na base de dadas
      */
-
     @Transactional
     public StatusCarroDTO atualizar(StatusCarroModel statusExistente) {
         try {
             if(!statusCarroRepository.existsById(statusExistente.getId())) {
                 throw new ConstraintException("O Status com " + statusExistente.getId() + "não existe na base de dados");
             }
-
+            //Retorna os dados atualizados
             return statusCarroRepository.save(statusExistente).toDTO();
         } catch (DataIntegrityException e) {
             throw new DataIntegrityException("Erro!! Não foi possível atualizar o Status " + statusExistente.getId());
@@ -99,6 +99,7 @@ public class StatusCarroService {
             if(!statusCarroRepository.existsById(statusExistente.getId())) {
                 throw new ConstraintException("Status de veículo inexistente na base de dados " );
             }
+            //Deleta da base de dados
             statusCarroRepository.delete(statusExistente);
 
         }catch (DataIntegrityException e){

@@ -26,6 +26,7 @@ public class CorModel {
     @NotBlank(message = "O campo não pode está vazio")
     private String nome;
 
+    //Conversão de Model para DTO
     public CorDTO toDTO() {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(this, CorDTO.class);

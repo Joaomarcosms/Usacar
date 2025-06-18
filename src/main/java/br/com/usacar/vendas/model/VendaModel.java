@@ -48,6 +48,7 @@ public class VendaModel {
     @NotNull(message = "O campo é obrigatório")
     private int vendedorId;
 
+    //Conversão de Model para DTO
     public VendaDTO toDTO(){
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(this, VendaDTO.class);

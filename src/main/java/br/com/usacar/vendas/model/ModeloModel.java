@@ -30,6 +30,7 @@ public class ModeloModel {
     @NotNull(message = "O campo é obrigatório")
     private int marcaId;
 
+    //Conversão de Model para DTO
     public ModeloDTO toDTO(){
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(this, ModeloDTO.class);

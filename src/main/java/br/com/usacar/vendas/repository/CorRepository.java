@@ -13,5 +13,5 @@ public interface CorRepository extends JpaRepository<CorModel, Integer> {
     List<CorModel> findByNome (String pNome);
 
 
-    boolean existsByNome(String nome);
+    boolean existsByNome(String pNome);
 }

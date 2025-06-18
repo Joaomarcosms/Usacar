@@ -14,9 +14,11 @@ import java.util.stream.Collectors;
 @Service
 public class CarroService {
 
+    //Injeção automatica de dependencias
     @Autowired
     private CarroRepository carroRepository;
 
+    //Irá obter por ID
     @Transactional(readOnly = true)
     public CarroDTO obterPorId(int id){
         CarroModel carro = carroRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Carro com " + id + "não encontrado"));
@@ -35,7 +37,7 @@ public class CarroService {
     }
 
     /*
-    *Irá salvar o veículo na base de dados
+    *Irá salvar o veículo na base de dados com as devidas exceptions
      */
 
     @Transactional
@@ -62,7 +64,8 @@ public class CarroService {
     }
 
     /*
-    *Irá atualizar o veículo na base de dadas
+    *Irá atualizar o veículo na base de dadas com as devidas exceptions
+    *
      */
 
     @Transactional
@@ -93,7 +96,7 @@ public class CarroService {
     }
 
     /*
-    *Deletar um veículo da base de dados
+    *Deletar um veículo da base de dados com as devidas exceptions
      */
 
     @Transactional

@@ -26,6 +26,7 @@ public class MarcaModel {
     @NotBlank(message = "O campo não pode está vazio")
     private String nome;
 
+    //Conversão de Model para DTO
     public MarcaDTO toDTO(){
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(this, MarcaDTO.class);

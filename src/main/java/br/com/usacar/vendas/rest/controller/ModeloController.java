@@ -15,34 +15,39 @@ import java.util.List;
 @RequestMapping("/modelo")
 public class ModeloController {
 
+    //Injeção automatica de dependencia
     @Autowired
     private ModeloService modeloService;
 
-
+    //Consultar dados por ID
     @GetMapping("/{id}")
     public ResponseEntity<ModeloDTO> obter(@PathVariable int id) {
         ModeloDTO modeloDTO = modeloService.obterPorId(id);
         return ResponseEntity.status(HttpStatus.OK).body(modeloDTO);
     }
 
+    //Obtem todos os dados cadastrados
     @GetMapping
     public ResponseEntity<List<ModeloDTO>> obterTodos() {
         List<ModeloDTO> modeloDTOList = modeloService.obterTodos();
         return ResponseEntity.ok(modeloDTOList);
     }
 
+    //Inserção de dados desejados
     @PostMapping
     public ResponseEntity<ModeloDTO> salvar(@RequestBody ModeloModel novoModelo) {
         ModeloDTO novoModeloDTO = modeloService.salvar(novoModelo);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoModeloDTO);
     }
 
+    //Atualização de dados já existentes em banco
     @PutMapping
     public ResponseEntity<ModeloDTO> atualizar(@Valid @RequestBody ModeloModel modeloExistente) {
         ModeloDTO novoModeloDTO = modeloService.atualizar(modeloExistente);
         return ResponseEntity.status(HttpStatus.OK).body(novoModeloDTO);
     }
 
+    //Deleta dados desejados do banco
     @DeleteMapping
     public ResponseEntity<String> deletar(@Valid @RequestBody ModeloModel modeloExistente) {
         modeloService.deletar(modeloExistente);

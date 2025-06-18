@@ -13,9 +13,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class CorService {
+
+    //Injeção automatica de dependencia
     @Autowired
     private CorRepository corRepository;
 
+    //Obtem por ID
     @Transactional(readOnly = true)
     public CorDTO obterPorId(int id){
         CorModel cor = corRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Cor com " + id + "não encontrado"));

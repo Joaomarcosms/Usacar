@@ -65,6 +65,7 @@ public class CarroModel {
     @NotNull(message = "O campo é obrigatório")
     private int statusId;
 
+    //Conversão do Model para DTO
     public CarroDTO toDTO() {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(this, CarroDTO.class);

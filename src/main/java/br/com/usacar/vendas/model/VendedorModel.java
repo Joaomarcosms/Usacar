@@ -63,6 +63,7 @@ public class VendedorModel {
     @NotBlank(message = "O campo não pode ser vazio")
     private String senha;
 
+    //Conversão de Model para DTO
     public VendedorDTO toDTO(){
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(this, VendedorDTO.class);

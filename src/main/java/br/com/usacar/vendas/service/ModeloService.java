@@ -40,8 +40,6 @@ public class ModeloService {
     @Transactional
     public ModeloDTO salvar(ModeloModel novoModelo) {
         try {
-            //Perguntar
-
             //Salvar o modelo na base de dados
             return modeloRepository.save(novoModelo).toDTO();
 
@@ -69,6 +67,7 @@ public class ModeloService {
             if (!modeloRepository.existsById(modeloExistente.getId())) {
                 throw new ConstraintException("O modelo que deseja " + modeloExistente.getId() + "não existe na base de dados");
             }
+            //Retorna os dados atualizados
             return modeloRepository.save(modeloExistente).toDTO();
 
         } catch (DataIntegrityException e) {
@@ -90,13 +89,13 @@ public class ModeloService {
     /*
     *Deletar um veículo da base de dados
      */
-
     @Transactional
     public void deletar(ModeloModel modeloExistente) {
         try {
             if (!modeloRepository.existsById(modeloExistente.getId())) {
                 throw new ConstraintException("Modelo inexistente na base de dados " );
             }
+            //Deleta da base de dados
             modeloRepository.delete(modeloExistente);
 
         } catch (DataIntegrityException e){

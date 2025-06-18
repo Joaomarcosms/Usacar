@@ -14,18 +14,19 @@ import java.util.stream.Collectors;
 @Service
 public class ClienteService {
 
+    //Injeção automatica de dependencias
     @Autowired
     private ClienteRepository clienteRepository;
 
+    //Busca o cliente por ID
     @Transactional(readOnly = true)
     public ClienteDTO obterPorId(int id) {
         ClienteModel cliente = clienteRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Cliente com " + id + " não encontrado"));
         return cliente.toDTO();
     }
 
-    /**
-     * Aqui obtem a lista de todos os clientes cadastrados
-     * @return a lista dos clientes cadastrados
+    /*
+    *Lista todos os clientes da base de dados
      */
 
     @Transactional(readOnly = true)
@@ -34,15 +35,8 @@ public class ClienteService {
         return clientes.stream().map(cliente -> cliente.toDTO()).collect(Collectors.toList());
     }
 
-    /**
-     * Salva um novo cliente na base de dados.
-     *
-     * @param novoCliente ClienteModel contendo os dados do novo cliente.
-     * @return ClienteDTO representando o cliente salvo.
-     * @throws ConstraintException       Se o telefone ou e-mail já existirem.
-     * @throws DataIntegrityException    Se ocorrer violação de integridade.
-     * @throws BusinessRuleException     Se houver violação de regra de negócio.
-     * @throws SQLException              Se ocorrer falha de conexão com o banco de dados.
+    /*
+    *Inserção dos dados na base de dados
      */
     @Transactional
     public ClienteDTO salvar(ClienteModel novoCliente) {
@@ -70,15 +64,8 @@ public class ClienteService {
         }
     }
 
-    /**
-     * Atualiza os dados de um cliente existente.
-     *
-     * @param clienteExistente ClienteModel contendo os dados atualizados do cliete.
-     * @return ClienteDTO representando o cliente atualizado.
-     * @throws ConstraintException       Se o telefone ou e-mail não existir.
-     * @throws DataIntegrityException    Se ocorrer violação de integridade.
-     * @throws BusinessRuleException     Se houver violação de regra de negócio.
-     * @throws SQLException              Se ocorrer falha de conexão com o banco de dados.
+    /*
+    *Atualiza o cliente na base de dados
      */
     @Transactional
     public ClienteDTO atualizar(ClienteModel clienteExistente) {
@@ -88,7 +75,6 @@ public class ClienteService {
             if (!clienteRepository.existsByCpf(clienteExistente.getCpf())) {
                 throw new ConstraintException("O Cliente com esse Cpf " + clienteExistente.getCpf() + " não existe na base de dados!");
             }
-
             //Atualiza o cliente na base de dados.
             return clienteRepository.save(clienteExistente).toDTO();
 
@@ -109,14 +95,8 @@ public class ClienteService {
         }
     }
 
-    /**
-     * Deleta um cliente da base de dados.
-     *
-     * @param clienteExistente ClienteModel contendo os dados do cliente a ser deletado.
-     * @throws ConstraintException       Se o cliente (id) não existir.
-     * @throws DataIntegrityException    Se ocorrer violação de integridade.
-     * @throws BusinessRuleException     Se houver violação de regra de negócio.
-     * @throws SQLException              Se ocorrer falha de conexão com o banco de dados..
+    /*
+    *Deleta o cliente da base de dados e sendo tratado com as devidas exceptions
      */
     @Transactional
     public void deletar(ClienteModel clienteExistente) {
@@ -126,7 +106,6 @@ public class ClienteService {
             if (!clienteRepository.existsById(clienteExistente.getId())) {
                 throw new ConstraintException("Cliente inexistente na base de dados!");
             }
-
             //Deletar o cliente na base de dados.
             clienteRepository.delete(clienteExistente);
 
