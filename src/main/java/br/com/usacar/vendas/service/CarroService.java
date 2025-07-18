@@ -116,7 +116,7 @@ public class CarroService {
             }
             throw e;
         } catch (BusinessRuleException e){
-            throw new BusinessRuleException("Erro! Não foi possível deletar o veículo " + carroExistente.getPlaca() + "Violãção da regra de negócio!");
+            throw new BusinessRuleException("Erro! Não foi possível deletar o veículo " + carroExistente.getPlaca() + "Violação da regra de negócio!");
         } catch (SQLException e){
             throw new SQLException("Erro! Não foi possível  deletar o veículo " + carroExistente.getPlaca() + "Falha na conexão com o banco de dados");
         } catch (ObjectNotFoundException e){
