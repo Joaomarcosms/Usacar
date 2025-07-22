@@ -35,6 +35,13 @@ public class ClienteService {
         return clientes.stream().map(cliente -> cliente.toDTO()).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public ClienteDTO obterPorCpf(String cpf) {
+        ClienteModel cliente = clienteRepository.findByCpf(cpf)
+                .orElseThrow(() -> new ObjectNotFoundException("Cliente com CPF " + cpf + " não encontrado"));
+        return cliente.toDTO();
+    }
+
     /*
     *Inserção dos dados na base de dados
      */
@@ -124,6 +131,16 @@ public class ClienteService {
         } catch (ObjectNotFoundException e) {
             throw new ObjectNotFoundException("Erro! Não foi possível deletar o cliente" + clienteExistente.getNome() + ". Não encontrado no banco de dados!");
         }
+    }
+
+
+    //Para poder deletar o cliente por cpf, integração com o frontEnd
+    //Precisa melhorar, foi para teste
+    @Transactional
+    public void deletarPorCpf(String cpf) {
+        ClienteModel cliente = clienteRepository.findByCpf(cpf)
+                .orElseThrow(() -> new ObjectNotFoundException("Cliente com CPF " + cpf + " não encontrado"));
+        clienteRepository.delete(cliente);
     }
 
 

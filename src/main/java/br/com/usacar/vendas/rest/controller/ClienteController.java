@@ -33,6 +33,14 @@ public class ClienteController {
         return ResponseEntity.ok(clienteDTOList);
     }
 
+    //Para poder consultar o cliente por cpf, integração com o frontEnd
+    //Precisa melhorar, foi para teste
+    @GetMapping("/obterporcpf/{cpf}")
+    public ResponseEntity<ClienteDTO> obterPorCpf(@PathVariable String cpf) {
+        ClienteDTO clienteDTO = clienteService.obterPorCpf(cpf);
+        return ResponseEntity.ok(clienteDTO);
+    }
+
     //Inserção de dados desejados
     @PostMapping
     public ResponseEntity<ClienteDTO> salvar(@Valid @RequestBody ClienteModel novoCliente) {
@@ -52,5 +60,13 @@ public class ClienteController {
     public ResponseEntity<String> deletar(@Valid @RequestBody ClienteModel clienteExistente) {
         clienteService.deletar(clienteExistente);
         return ResponseEntity.ok().body("Deletado com sucesso!!");
+    }
+
+    //Para poder deletar o cliente por cpf, integração com o frontEnd
+    //Precisa melhorar, foi para teste
+    @DeleteMapping("/deletar/{cpf}")
+    public ResponseEntity<String> deletarPorCpf(@PathVariable String cpf) {
+        clienteService.deletarPorCpf(cpf);
+        return ResponseEntity.ok("Cliente deletado com sucesso!");
     }
 }
