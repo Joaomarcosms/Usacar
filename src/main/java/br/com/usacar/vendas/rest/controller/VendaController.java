@@ -3,14 +3,17 @@ package br.com.usacar.vendas.rest.controller;
 import br.com.usacar.vendas.model.VendaModel;
 import br.com.usacar.vendas.repository.VendaRepository;
 import br.com.usacar.vendas.rest.dto.VendaDTO;
+import br.com.usacar.vendas.rest.dto.VendaRelatorioDTO;
 import br.com.usacar.vendas.service.CarroService;
 import br.com.usacar.vendas.service.VendaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -34,6 +37,16 @@ public class VendaController {
         List<VendaDTO> vendaDTOList = vendaService.obterTodas();
         return ResponseEntity.ok().body(vendaDTOList);
     }
+
+    @GetMapping("/comissoes")
+    public ResponseEntity<List<VendaRelatorioDTO>> gerarRelatorioComissoes(
+            @RequestParam("dataInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
+
+        List<VendaRelatorioDTO> relatorio = vendaService.gerarRelatorioComissoes(dataInicio, dataFim);
+        return ResponseEntity.ok(relatorio);
+    }
+
 
     //Inserção de dados desejados
     @PostMapping

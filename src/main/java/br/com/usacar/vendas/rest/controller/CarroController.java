@@ -2,6 +2,8 @@ package br.com.usacar.vendas.rest.controller;
 
 import br.com.usacar.vendas.model.CarroModel;
 import br.com.usacar.vendas.rest.dto.CarroDTO;
+import br.com.usacar.vendas.rest.dto.CarroEstoqueDTO;
+import br.com.usacar.vendas.rest.dto.CarroFiltroDTO;
 import br.com.usacar.vendas.service.CarroService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,26 @@ public class CarroController {
     public ResponseEntity<List<CarroDTO>> obterTodos() {
     List<CarroDTO> carroDTOList = carroService.obterTodos();
     return ResponseEntity.ok(carroDTOList);
+    }
+
+    @GetMapping("/estoque")
+    public List<CarroEstoqueDTO> consultarEstoque(
+            @RequestParam(required = false) String marca,
+            @RequestParam(required = false) String modelo,
+            @RequestParam(required = false) Integer anoFabricacao,
+            @RequestParam(required = false) String cor,
+            @RequestParam(required = false) Integer kmMaxima,
+            @RequestParam(required = false) String status
+    ) {
+        CarroFiltroDTO filtro = new CarroFiltroDTO();
+        filtro.setMarca(marca);
+        filtro.setModelo(modelo);
+        filtro.setAnoFabricacao(anoFabricacao);
+        filtro.setCor(cor);
+        filtro.setKmMaxima(kmMaxima);
+        filtro.setStatus(status);
+
+        return carroService.consultarEstoque(filtro);
     }
 
     //Inserção de dados desejados

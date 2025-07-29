@@ -5,8 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface StatusCarroRepository  extends JpaRepository<StatusCarroModel, Integer> {
-    List<StatusCarroModel> findByDescricao(String descricao);
+public interface StatusCarroRepository extends JpaRepository<StatusCarroModel, Integer> {
+    Optional<StatusCarroModel> findByDescricaoIgnoreCase(String descricao);
 }
+

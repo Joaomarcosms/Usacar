@@ -35,10 +35,12 @@ public class ModeloController {
 
     //Inserção de dados desejados
     @PostMapping
-    public ResponseEntity<ModeloDTO> salvar(@RequestBody ModeloModel novoModelo) {
-        ModeloDTO novoModeloDTO = modeloService.salvar(novoModelo);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoModeloDTO);
+    public ResponseEntity<ModeloDTO> cadastrarModelo(@RequestBody ModeloDTO novoModeloDTO) {
+        ModeloDTO modeloSalvo = modeloService.salvar(novoModeloDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(modeloSalvo);
     }
+
+
 
     //Atualização de dados já existentes em banco
     @PutMapping

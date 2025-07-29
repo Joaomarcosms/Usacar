@@ -4,6 +4,8 @@ import br.com.usacar.vendas.exception.*;
 import br.com.usacar.vendas.model.CarroModel;
 import br.com.usacar.vendas.repository.CarroRepository;
 import br.com.usacar.vendas.rest.dto.CarroDTO;
+import br.com.usacar.vendas.rest.dto.CarroEstoqueDTO;
+import br.com.usacar.vendas.rest.dto.CarroFiltroDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,11 @@ public class CarroService {
     //Injeção automatica de dependencias
     @Autowired
     private CarroRepository carroRepository;
+
+    public List<CarroEstoqueDTO> consultarEstoque(CarroFiltroDTO filtro) {
+        return carroRepository.filtrarEstoque(filtro);
+
+    }
 
     //Irá obter por ID
     @Transactional(readOnly = true)

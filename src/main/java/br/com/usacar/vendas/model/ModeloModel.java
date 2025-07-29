@@ -26,6 +26,10 @@ public class ModeloModel {
     @NotBlank(message = "O campo não pode está vazio")
     private String nome;
 
+    @ManyToOne
+    @JoinColumn(name = "marcaId", insertable = false, updatable = false)
+    private MarcaModel marca;
+
     @Column(name = "marcaId")
     @NotNull(message = "O campo é obrigatório")
     private int marcaId;

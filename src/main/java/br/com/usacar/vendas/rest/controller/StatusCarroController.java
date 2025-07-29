@@ -35,24 +35,23 @@ public class StatusCarroController {
 
     //Inserção de dados desejados
     @PostMapping
-    public ResponseEntity<StatusCarroDTO> salvar(@RequestBody StatusCarroModel novoStatusCarro) {
-        StatusCarroDTO novoStatusCarroDTO = statusCarroService.salvar(novoStatusCarro);
+    public ResponseEntity<StatusCarroDTO> salvar(@RequestBody @Valid StatusCarroModel novoStatus) {
+        StatusCarroDTO novoStatusCarroDTO = statusCarroService.salvar(novoStatus);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoStatusCarroDTO);
     }
 
+
     //Atualização de dados já existentes em banco
     @PutMapping
-    public ResponseEntity<StatusCarroDTO> atualizar(@Valid @RequestBody StatusCarroModel StatusCarroExistente) {
-        StatusCarroDTO novoStatusCarro = statusCarroService.atualizar(StatusCarroExistente);
-        return ResponseEntity.status(HttpStatus.OK).body(novoStatusCarro);
+    public ResponseEntity<StatusCarroDTO> atualizar(@Valid @RequestBody StatusCarroModel statusExistente) {
+        StatusCarroDTO atualizado = statusCarroService.atualizar(statusExistente);
+        return ResponseEntity.status(HttpStatus.OK).body(atualizado);
     }
 
-    //Deleta dados desejados do banco
     @DeleteMapping
-    public ResponseEntity<String>deletar (@Valid @RequestBody StatusCarroModel StatusCarroExistente) {
-        statusCarroService.deletar(StatusCarroExistente );
-        return ResponseEntity.ok().body("Deletado com sucesso!!");
-
-
+    public ResponseEntity<String> deletar(@Valid @RequestBody StatusCarroModel statusExistente) {
+        statusCarroService.deletar(statusExistente);
+        return ResponseEntity.ok("Deletado com sucesso!!");
     }
+
 }

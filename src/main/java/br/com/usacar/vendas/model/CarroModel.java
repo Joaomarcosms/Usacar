@@ -41,8 +41,7 @@ public class CarroModel {
 
     @Column(name = "quilometragem",length = 128, nullable = false)
     @NotNull(message = "O campo é obrigatório")
-    @NotBlank(message = "O campo não pode está vazio")
-    private  String quilometragem;
+    private int quilometragem;
 
     @Column(name = "precoCompra", nullable = false)
     @NotNull(message = "O campo é obrigatório")
@@ -52,6 +51,7 @@ public class CarroModel {
     @Column(name = "dataCadastro", nullable = false)
     @NotNull(message = "O campo é obrigatório")
     private LocalDate dataCadastro;
+
 
     @Column(name = "modeloId", nullable = false)
     @NotNull(message = "O campo é obrigatório")
@@ -65,9 +65,31 @@ public class CarroModel {
     @NotNull(message = "O campo é obrigatório")
     private int statusId;
 
+
+/*
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "modeloId", insertable = false, updatable = false)
+    private ModeloModel  modelo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "corId", insertable = false, updatable = false)
+    private CorModel cor;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "statusId", insertable = false, updatable = false)
+    private StatusCarroModel status;
+
+ */
+
+
+
     //Conversão do Model para DTO
     public CarroDTO toDTO() {
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(this, CarroDTO.class);
+    }
+
+
+    public void setStatus(StatusCarroModel statusVendido) {
     }
 }
