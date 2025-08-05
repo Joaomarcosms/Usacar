@@ -25,4 +25,9 @@ public class CarroDTO {
     private int corId;
 
     private int statusId;
+
+    // DTOs aninhados
+    private ModeloDTO modelo;
+    private CorDTO cor;
+    private StatusCarroDTO status;
 }

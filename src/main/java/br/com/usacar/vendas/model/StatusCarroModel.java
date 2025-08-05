@@ -27,9 +27,12 @@ public class StatusCarroModel {
     @NotBlank(message = "O campo não pode está vazio")
     private String descricao;
 
+    /*
     @ManyToOne
     @JoinColumn(name = "status_id")
     private StatusCarroModel status;
+
+     */
 
 
     //Conversão de Model para DTO

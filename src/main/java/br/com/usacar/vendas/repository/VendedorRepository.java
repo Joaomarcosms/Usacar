@@ -13,10 +13,9 @@ import java.util.Optional;
 
 @Repository
 public interface VendedorRepository extends JpaRepository<VendedorModel, Integer> {
-    Optional<VendedorModel> findByNome (String pNome);
+    Optional<VendedorModel> findByNome(String pNome);
+    Optional<VendedorModel> findByCpfOrTelefoneOrEmail(String pCpf, String pTelefone, String pEmail);
 
-    Optional<VendedorModel> findByCpfOrTelefoneOrEmail (String pCpf, String pTelefone, String pEmail);
-
-
-    boolean existsByCpf( String pCpf);
+    boolean existsByCpf(String pCpf);
+    boolean existsByEmail(String email);
 }

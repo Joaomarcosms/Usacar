@@ -1,14 +1,22 @@
 package br.com.usacar.vendas.service;
 
-import br.com.usacar.vendas.exception.*;
+import br.com.usacar.vendas.exception.BusinessRuleException;
+import br.com.usacar.vendas.exception.ObjectNotFoundException;
 import br.com.usacar.vendas.model.VendedorModel;
 import br.com.usacar.vendas.repository.VendedorRepository;
-import br.com.usacar.vendas.rest.dto.VendedorDTO;
+import br.com.usacar.vendas.rest.dto.VendedorCadastroDTO;
+import br.com.usacar.vendas.rest.dto.VendedorResponseDTO;
+import org.modelmapper.ModelMapper;
+import java.time.LocalDate;
+import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -17,113 +25,133 @@ public class VendedorService {
     @Autowired
     private VendedorRepository vendedorRepository;
 
-    //Obtem os dados de um vendedor por id
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    /**
+     * Obtém os dados de um vendedor por ID.
+     *
+     * @param id O ID do vendedor a ser buscado.
+     * @return O DTO de resposta do vendedor.
+     * @throws ObjectNotFoundException Se o vendedor não for encontrado.
+     */
     @Transactional(readOnly = true)
-    public VendedorDTO obterPorId(int id) {
-        VendedorModel vendedor = vendedorRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Vendedor com " + id + " não encontrado"));
-        return vendedor.toDTO();
+    public VendedorResponseDTO obterPorId(int id) {
+        VendedorModel vendedor = vendedorRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Vendedor com ID " + id + " não encontrado."));
+        return modelMapper.map(vendedor, VendedorResponseDTO.class);
     }
 
-    //Obtem os dados de todos os vendedores em sistema.
+    /**
+     * Obtém os dados de todos os vendedores no sistema.
+     *
+     * @return Uma lista de DTOs de resposta de todos os vendedores.
+     */
     @Transactional(readOnly = true)
-    public List<VendedorDTO> obterTodos() {
-        List<VendedorModel> vendedor = vendedorRepository.findAll();
-        return vendedor.stream().map(v -> v.toDTO()).collect(Collectors.toList());
+    public List<VendedorResponseDTO> obterTodos() {
+        List<VendedorModel> vendedores = vendedorRepository.findAll();
+        return vendedores.stream()
+                .map(vendedor -> modelMapper.map(vendedor, VendedorResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
-    /*
-     *Salva os dados de um vendedor.
-     * Com o tratamento das devidadas exceptions
+    /**
+     * Salva os dados de um novo vendedor, aplicando validações e criptografando a senha.
+     *
+     * @param dto O DTO de cadastro do vendedor contendo os dados.
+     * @return Um mapa contendo a mensagem de sucesso e o ID do vendedor cadastrado.
+     * @throws BusinessRuleException Se houver violação de regra de negócio (CPF/email duplicado, data futura).
      */
-
     @Transactional
-    public VendedorDTO salvar(VendedorModel novoVendedor) {
-        try {
-            //Caso ocorra uma tentativa de salvar um novo vendedor com um cpf já existente
-            if (vendedorRepository.existsByCpf(novoVendedor.getCpf())) {
-                throw new ConstraintException("Já existe um vendedor com esse CPF " + novoVendedor.getCpf());
-            }
-            //Salvar o novo vendedor na base de dados
-            return vendedorRepository.save(novoVendedor).toDTO();
-
-        } catch (DataIntegrityException e) {
-            throw new DataIntegrityException("Erro!! Não foi possível salvar o vendedor " + novoVendedor.getCpf());
-        } catch (ConstraintException e) {
-
-            // Relança a mensagem original ou adiciona contexto
-            if (e.getMessage() == null || e.getMessage().isBlank()) {
-                throw new ConstraintException("Erro de restrição de integridade ao salvar o vendedor " + novoVendedor.getNome() + ".");
-            }
-            throw e;
-        } catch (BusinessRuleException e) {
-            throw new BusinessRuleException("Erro! Não foi possível salvar o vendedor " + novoVendedor.getNome() + ". Violação de regra de negócio!");
-        } catch (SQLException e) {
-            throw new SQLException("Erro! Não foi possível salvar o vendedor " + novoVendedor.getNome() + ". Falha na conexão com o banco de dados!");
+    public Map<String, Object> salvar(VendedorCadastroDTO dto) {
+        // Validação de CPF único
+        if (vendedorRepository.existsByCpf(dto.getCpf())) {
+            throw new BusinessRuleException("CPF já cadastrado.");
         }
+
+        // Validação de E-mail único
+        if (vendedorRepository.existsByEmail(dto.getEmail())) {
+            throw new BusinessRuleException("E-mail já está em uso.");
+        }
+
+        // Validação de dataAdmissao (não pode ser futura)
+        if (dto.getDataAdmissao().isAfter(LocalDate.now())) {
+            throw new BusinessRuleException("A data de admissão não pode ser futura.");
+        }
+
+        // Criptografar a senha
+        String senhaCriptografada = passwordEncoder.encode(dto.getSenha());
+
+
+        VendedorModel novoVendedor = modelMapper.map(dto, VendedorModel.class);
+        novoVendedor.setSenha(senhaCriptografada); // Define a senha criptografada no modelo
+
+        VendedorModel vendedorSalvo = vendedorRepository.save(novoVendedor);
+
+        // Retorna o Map de resposta customizado
+        Map<String, Object> response = new HashMap<>();
+        response.put("mensagem", "Vendedor cadastrado com sucesso.");
+        response.put("vendedorId", vendedorSalvo.getId());
+        return response;
     }
 
-    /*
-     *Atualiza os dados de um vendedor existente
-     * Com o tratamento das devidadas exceptions
+    /**
+     * Atualiza os dados de um vendedor existente, aplicando validações e criptografando a senha se fornecida.
+     *
+     * @param id O ID do vendedor a ser atualizado.
+     * @param dto O DTO de cadastro do vendedor contendo os dados atualizados.
+     * @return O DTO de resposta do vendedor atualizado.
+     * @throws ObjectNotFoundException Se o vendedor não for encontrado.
+     * @throws BusinessRuleException Se houver violação de regra de negócio (CPF/email duplicado, data futura).
      */
-
     @Transactional
-    public VendedorDTO atualizar(VendedorModel vendedorExistente) {
-        try {
-            //Caso ocorra uma tentativa de atualizar um vendedor que não existe utilizando um Cpf.
-            if (!vendedorRepository.existsByCpf(vendedorExistente.getCpf())) {
-                throw new ConstraintException("O vendedor com esse Cpf " + vendedorExistente.getCpf() + " não existe na base de dados!");
-            }
-            //Atualiza o vendedor na base de dados
-            return vendedorRepository.save(vendedorExistente).toDTO();
+    public VendedorResponseDTO atualizar(Integer id, VendedorCadastroDTO dto) {
+        VendedorModel vendedorExistente = vendedorRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Vendedor com ID " + id + " não encontrado para atualização."));
 
-        } catch (DataIntegrityException e) {
-            throw new DataIntegrityException("Erro! Não foi possível atualizar o vendedor" + vendedorExistente.getNome() + " !");
-        } catch (ConstraintException e) {
-            if (e.getMessage() == null || e.getMessage().isBlank()) {
-                throw new ConstraintException("Erro ao atualizar o vendedor " + vendedorExistente.getNome() + ": Restrição de integridade de dados.");
-            }
-            throw e;
-        } catch (BusinessRuleException e) {
-            throw new BusinessRuleException("Erro! Não foi possível atualizar o vendedor " + vendedorExistente.getNome() + ". Violação de regra de negócio!");
-        } catch (SQLException e) {
-            throw new SQLException("Erro! Não foi possível atualizar o vendedor " + vendedorExistente.getNome() + ". Falha na conexão com o banco de dados!");
-        } catch (ObjectNotFoundException e) {
-            throw new ObjectNotFoundException("Erro! Não foi possível atualizar o vendedor" + vendedorExistente.getNome() + ". Não encontrado no banco de dados!");
+        // Validação de CPF único (se o CPF for alterado e já existir para outro vendedor)
+        if (!vendedorExistente.getCpf().equals(dto.getCpf()) && vendedorRepository.existsByCpf(dto.getCpf())) {
+            throw new BusinessRuleException("CPF já cadastrado para outro vendedor.");
         }
+
+        // Validação de E-mail único (se o E-mail for alterado e já existir para outro vendedor)
+        if (!vendedorExistente.getEmail().equals(dto.getEmail()) && vendedorRepository.existsByEmail(dto.getEmail())) {
+            throw new BusinessRuleException("E-mail já está em uso por outro vendedor.");
+        }
+
+        // Validação de dataAdmissao (não pode ser futura)
+        if (dto.getDataAdmissao().isAfter(LocalDate.now())) {
+            throw new BusinessRuleException("A data de admissão não pode ser futura.");
+        }
+
+
+        modelMapper.map(dto, vendedorExistente);
+
+        // Se a senha for fornecida no DTO e não estiver vazia, criptografe e atualize
+        if (dto.getSenha() != null && !dto.getSenha().isBlank()) {
+            vendedorExistente.setSenha(passwordEncoder.encode(dto.getSenha()));
+        }
+
+        VendedorModel vendedorAtualizado = vendedorRepository.save(vendedorExistente);
+        return modelMapper.map(vendedorAtualizado, VendedorResponseDTO.class); // Retorna VendedorResponseDTO
     }
 
-    /*
-     *Deleta um vendedor da base de dados.
-     * Com o tratamento das devidadas exceptions
+    /**
+     * Deleta um vendedor da base de dados.
+     *
+     * @param id O ID do vendedor a ser deletado.
+     * @throws ObjectNotFoundException Se o vendedor não for encontrado.
+     * @throws BusinessRuleException Se houver alguma regra de negócio que impeça a exclusão.
      */
-
     @Transactional
-    public void deletar(VendedorModel vendedorExistente) {
+    public void deletar(int id) {
+        VendedorModel vendedor = vendedorRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Vendedor com ID " + id + " não encontrado para exclusão."));
 
-        try {
-            //Caso ocorra uma tentativa de deletar um vendedor que não existe utilizando o id.
-            if (!vendedorRepository.existsById(vendedorExistente.getId())) {
-                throw new ConstraintException("Vendedor inexistente na base de dados!");
-            }
-            //Deletar o vendedor na base de dados.
-            vendedorRepository.delete(vendedorExistente);
 
-        } catch (DataIntegrityException e) {
-            throw new DataIntegrityException("Erro! Não foi possível deletar o vendedor " + vendedorExistente.getNome() + " !");
-        } catch (ConstraintException e) {
-
-            // Relança a mensagem original ou adiciona contexto
-            if (e.getMessage() == null || e.getMessage().isBlank()) {
-                throw new ConstraintException("Erro ao deletar o vendedor " + vendedorExistente.getNome() + ": Restrição de integridade de dados.");
-            }
-            throw e;
-        } catch (BusinessRuleException e) {
-            throw new BusinessRuleException("Erro! Não foi possível deletar o vendedor " + vendedorExistente.getNome() + ". Violação de regra de negócio!");
-        } catch (SQLException e) {
-            throw new SQLException("Erro! Não foi possível deletar o vendedor " + vendedorExistente.getNome() + ". Falha na conexão com o banco de dados!");
-        } catch (ObjectNotFoundException e) {
-            throw new ObjectNotFoundException("Erro! Não foi possível deletar o vendedor" + vendedorExistente.getNome() + ". Não encontrado no banco de dados!");
-        }
+        vendedorRepository.delete(vendedor);
     }
 }

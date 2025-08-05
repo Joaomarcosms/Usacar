@@ -17,6 +17,7 @@ public class CarroRepositoryImpl implements CarroRepositoryCustom {
     public List<CarroEstoqueDTO> filtrarEstoque(CarroFiltroDTO filtro) {
         StringBuilder jpql = new StringBuilder("""
                     SELECT new br.com.usacar.vendas.rest.dto.CarroEstoqueDTO(
+                        c.id,              
                         mar.nome,
                         mod.nome,
                         c.anoFabricacao,
@@ -28,12 +29,13 @@ public class CarroRepositoryImpl implements CarroRepositoryCustom {
                         status.descricao
                     )
                     FROM CarroModel c
-                    JOIN ModeloModel mod ON c.modeloId = mod.id
-                    JOIN MarcaModel mar ON mod.marcaId = mar.id
-                    JOIN CorModel cor ON c.corId = cor.id
-                    JOIN StatusCarroModel status ON c.statusId = status.id
+                    JOIN c.modelo mod       
+                    JOIN mod.marca mar      
+                    JOIN c.cor cor          
+                    JOIN c.status status 
                     WHERE 1=1
                 """);
+
 
         if (filtro.getMarca() != null) {
             jpql.append(" AND LOWER(mar.nome) LIKE LOWER(CONCAT('%', :marca, '%')) ");
@@ -51,7 +53,7 @@ public class CarroRepositoryImpl implements CarroRepositoryCustom {
             jpql.append(" AND c.quilometragem <= :kmMaxima ");
         }
         if (filtro.getStatus() != null) {
-            jpql.append(" AND LOWER(status.nome) LIKE LOWER(CONCAT('%', :status, '%')) ");
+            jpql.append(" AND LOWER(status.descricao) LIKE LOWER(CONCAT('%', :status, '%')) "); // Filtra pela descrição
         }
 
         TypedQuery<CarroEstoqueDTO> query = em.createQuery(jpql.toString(), CarroEstoqueDTO.class);

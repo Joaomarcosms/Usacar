@@ -2,6 +2,7 @@ package br.com.usacar.vendas.rest.controller;
 
 import br.com.usacar.vendas.model.VendaModel;
 import br.com.usacar.vendas.repository.VendaRepository;
+import br.com.usacar.vendas.rest.dto.MarcaRankingDTO;
 import br.com.usacar.vendas.rest.dto.VendaDTO;
 import br.com.usacar.vendas.rest.dto.VendaRelatorioDTO;
 import br.com.usacar.vendas.service.CarroService;
@@ -47,13 +48,24 @@ public class VendaController {
         return ResponseEntity.ok(relatorio);
     }
 
+    @GetMapping("/relatorios/marcas-mais-vendidas")
+    public ResponseEntity<List<MarcaRankingDTO>> obterRankingMarcasMaisVendidas(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim
+    ) {
+        List<MarcaRankingDTO> ranking = vendaService.obterRankingMarcasMaisVendidas(dataInicio, dataFim);
+        return ResponseEntity.ok(ranking);
+    }
+
 
     //Inserção de dados desejados
     @PostMapping
-    public ResponseEntity<VendaDTO> salvar(@Valid  @RequestBody VendaModel novaVenda) {
-        VendaDTO novaVendaDTO = vendaService.salvar(novaVenda);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novaVendaDTO);
+    public ResponseEntity<VendaDTO> salvar(@Valid @RequestBody VendaDTO vendaDTO) {
+        VendaModel venda = vendaService.converterParaEntidade(vendaDTO);
+        VendaDTO vendaSalva = vendaService.salvar(venda);
+        return ResponseEntity.status(HttpStatus.CREATED).body(vendaSalva);
     }
+
 
     //Atualização de dados já existentes em banco
     @PutMapping

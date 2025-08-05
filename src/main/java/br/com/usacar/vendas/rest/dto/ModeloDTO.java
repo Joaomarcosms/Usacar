@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class ModeloDTO {
     private int id;
     private String nome;
-    private int marcaid;
+    private MarcaDTO marca;
 
 
 

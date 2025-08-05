@@ -4,9 +4,10 @@ import br.com.usacar.vendas.exception.*;
 import br.com.usacar.vendas.model.*;
 import br.com.usacar.vendas.repository.*;
 
+import br.com.usacar.vendas.rest.dto.MarcaRankingDTO;
 import br.com.usacar.vendas.rest.dto.VendaDTO;
+import br.com.usacar.vendas.rest.dto.VendaHistoricoDTO;
 import br.com.usacar.vendas.rest.dto.VendaRelatorioDTO;
-import org.hibernate.validator.constraintvalidators.RegexpURLValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,10 +34,17 @@ public class VendaService {
     @Autowired
     private StatusCarroRepository statusCarroRepository;
 
+    // Estes repositórios não são mais necessários para buscar Modelo/Cor
+    // diretamente no historico de vendas, pois o CarroModel já os contém.
+    // @Autowired
+    // private ModeloRepository modeloRepository;
+    // @Autowired
+    // private CorRepository corRepository;
+
     /*
     Método que converte DTO para entidade VendaModel
      */
-    private VendaModel converterParaEntidade(VendaDTO dto) {
+    public VendaModel converterParaEntidade(VendaDTO dto) {
         CarroModel carro = carroRepository.findById(dto.getCarroId())
                 .orElseThrow(() -> new BusinessRuleException("Carro não encontrado"));
         ClienteModel cliente = clienteRepository.findById(dto.getClienteId())
@@ -58,7 +66,7 @@ public class VendaService {
 
     @Transactional(readOnly = true)
     public VendaDTO obterPorId(int id){
-        VendaModel venda = vendaRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Venda com " + id + "não encontrada"));
+        VendaModel venda = vendaRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Venda com " + id + " não encontrada"));
         return venda.toDTO();
     }
 
@@ -89,7 +97,8 @@ public class VendaService {
     @Transactional
     public VendaDTO salvar(VendaModel novaVenda) {
         try {
-            if (vendaRepository.existsById(novaVenda.getId())) {
+
+            if (novaVenda.getId() != null && vendaRepository.existsById(novaVenda.getId())) {
                 throw new ConstraintException("Já existe uma venda com esse ID " + novaVenda.getId());
             }
 
@@ -119,7 +128,7 @@ public class VendaService {
             throw e;
         } catch (BusinessRuleException e){
             throw new BusinessRuleException("Erro!! Não foi possível salvar a venda" + novaVenda.getId() );
-        } catch (SQLException e){
+        } catch (SQLException e){ // SQLException deve ser evitada na camada de serviço, use exceções Spring Data
             throw new SQLException("Erro!! Não foi possível salvar a venda " + novaVenda.getId());
         }
     }
@@ -146,7 +155,7 @@ public class VendaService {
             throw e;
         }catch (BusinessRuleException e){
             throw new BusinessRuleException("Erro!! Não foi possível atualizar os dados da venda " + vendaExistente.getId() + "Retrição de regra de negócio!");
-        } catch (SQLException e){
+        } catch (SQLException e){ // SQLException deve ser evitada na camada de serviço, use exceções Spring Data
             throw new SQLException("Erro!! Não foi possível atualizar os dados da venda " + vendaExistente.getId() +  "Falha na conexão com o banco de dados");
         } catch (ObjectNotFoundException e){
             throw new ObjectNotFoundException("Erro!! Não foi possível atualizar os dados da venda" + vendaExistente.getId() +  "Não encontrado no banco de dados!");
@@ -175,10 +184,10 @@ public class VendaService {
             throw e;
         } catch (BusinessRuleException e){
             throw new BusinessRuleException("Erro! Não foi possível deletar a venda " + vendaExistente.getId() + "Violação da regra de negócio!");
-        } catch (SQLException e){
+        } catch (SQLException e){ // SQLException deve ser evitada na camada de serviço, use exceções Spring Data
             throw new SQLException("Erro! Não foi possível  deletar a venda " + vendaExistente.getId() + "Falha na conexão com o banco de dados");
         } catch (ObjectNotFoundException e){
-            throw new ObjectNotFoundException("Erro! Não foi possível deletar a venda " + vendaExistente.getId() + "Não encontrado no banco de dados!");
+            throw  new ObjectNotFoundException("Erro! Não foi possível deletar a venda " + vendaExistente.getId() + "Não encontrado no banco de dados!");
         }
     }
 
@@ -191,4 +200,42 @@ public class VendaService {
         return vendaRepository.gerarRelatorioVendasPorVendedor(dataInicio, dataFim);
     }
 
+    @Transactional(readOnly = true)
+    public List<VendaHistoricoDTO> obterHistoricoVendasPorCliente(Integer clienteId) {
+        clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new ObjectNotFoundException("Cliente com ID " + clienteId + " não encontrado"));
+
+        List<VendaModel> vendas = vendaRepository.findAllByClienteId(clienteId);
+
+        return vendas.stream().map(venda -> {
+            CarroModel carro = venda.getCarro();
+
+            // Acessando diretamente os objetos Modelo e Cor do CarroModel
+            // Não é necessário buscar novamente no repositório
+            String nomeModelo = (carro.getModelo() != null) ? carro.getModelo().getNome() : "Modelo não encontrado";
+            String nomeMarca = (carro.getModelo() != null && carro.getModelo().getMarca() != null) ? carro.getModelo().getMarca().getNome() : "Marca não encontrada";
+
+            String nomeCor = (carro.getCor() != null) ? carro.getCor().getNome() : "Cor não encontrada";
+
+            return new VendaHistoricoDTO(
+                    venda.getDataVenda(),
+                    venda.getValorVenda(),
+                    venda.getValorComissao(),
+                    new VendaHistoricoDTO.CarroDTO(
+                            nomeMarca,
+                            nomeModelo,
+                            carro.getAnoFabricacao(),
+                            carro.getAnoModelo(),
+                            carro.getPlaca(),
+                            nomeCor
+                    ),
+                    venda.getVendedor().getNome()
+            );
+        }).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<MarcaRankingDTO> obterRankingMarcasMaisVendidas(LocalDate dataInicio, LocalDate dataFim) {
+        return vendaRepository.gerarRankingMarcasMaisVendidas(dataInicio, dataFim);
+    }
 }

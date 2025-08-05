@@ -2,7 +2,9 @@ package br.com.usacar.vendas.rest.controller;
 
 import br.com.usacar.vendas.model.ClienteModel;
 import br.com.usacar.vendas.rest.dto.ClienteDTO;
+import br.com.usacar.vendas.rest.dto.VendaHistoricoDTO;
 import br.com.usacar.vendas.service.ClienteService;
+import br.com.usacar.vendas.service.VendaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,9 @@ public class ClienteController {
     //Injeção automatica de dependencia
     @Autowired
     private ClienteService clienteService;
+
+    @Autowired
+    private VendaService vendaService;
 
     //Consultar dados por ID
     @GetMapping("/{id}")
@@ -40,6 +45,16 @@ public class ClienteController {
         ClienteDTO clienteDTO = clienteService.obterPorCpf(cpf);
         return ResponseEntity.ok(clienteDTO);
     }
+
+
+    @GetMapping("/{id}/historico-vendas")
+    public ResponseEntity<List<VendaHistoricoDTO>> obterHistoricoVendas(@PathVariable Integer id) {
+        List<VendaHistoricoDTO> historico = vendaService.obterHistoricoVendasPorCliente(id);
+        return ResponseEntity.ok(historico);
+    }
+
+
+
 
     //Inserção de dados desejados
     @PostMapping

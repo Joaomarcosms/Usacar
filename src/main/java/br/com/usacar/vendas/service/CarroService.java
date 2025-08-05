@@ -2,7 +2,12 @@ package br.com.usacar.vendas.service;
 
 import br.com.usacar.vendas.exception.*;
 import br.com.usacar.vendas.model.CarroModel;
+import br.com.usacar.vendas.model.StatusCarroModel;
+import br.com.usacar.vendas.model.VendaModel;
 import br.com.usacar.vendas.repository.CarroRepository;
+import br.com.usacar.vendas.repository.StatusCarroRepository;
+import br.com.usacar.vendas.repository.VendaRepository;
+import br.com.usacar.vendas.rest.dto.AtualizarStatusCarroDTO;
 import br.com.usacar.vendas.rest.dto.CarroDTO;
 import br.com.usacar.vendas.rest.dto.CarroEstoqueDTO;
 import br.com.usacar.vendas.rest.dto.CarroFiltroDTO;
@@ -10,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +25,13 @@ public class CarroService {
     //Injeção automatica de dependencias
     @Autowired
     private CarroRepository carroRepository;
+
+    @Autowired
+    private  VendaRepository vendaRepository;
+
+    @Autowired
+    private StatusCarroRepository statusCarroRepository;
+
 
     public List<CarroEstoqueDTO> consultarEstoque(CarroFiltroDTO filtro) {
         return carroRepository.filtrarEstoque(filtro);
@@ -42,6 +55,9 @@ public class CarroService {
         List<CarroModel> carros = carroRepository.findAll();
         return carros.stream().map(carro -> carro.toDTO()).collect(Collectors.toList());
     }
+
+
+
 
     /*
     *Irá salvar o veículo na base de dados com as devidas exceptions
@@ -131,4 +147,43 @@ public class CarroService {
         }
     }
 
+    @Transactional
+    public CarroModel atualizarStatusCarro(Integer id, String novoStatusStr) {
+        // Regra 1: Só é permitido alterar status de carros existentes.
+        CarroModel carro = carroRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Carro com ID " + id + " não encontrado."));
+
+        // Buscando o novo status no banco de dados
+        StatusCarroModel novoStatus = statusCarroRepository.findByDescricaoIgnoreCase(novoStatusStr)
+                .orElseThrow(() -> new BusinessRuleException("Status inválido: " + novoStatusStr));
+
+        StatusCarroModel statusAtual = carro.getStatus();
+
+        // Regra 3: Se o status atual for Vendido, o carro não pode mais retornar
+        // A comparação agora é feita pela descrição do status, não por um enum
+        if ("Vendido".equalsIgnoreCase(statusAtual.getDescricao()) && !"Vendido".equalsIgnoreCase(novoStatus.getDescricao())) {
+            throw new BusinessRuleException("Não é possível alterar o status de um carro já vendido para um status anterior.");
+        }
+
+        // Regra 2: Se o novo status for Vendido, deve haver registro de venda.
+        if ("Vendido".equalsIgnoreCase(novoStatus.getDescricao())) {
+            boolean temVendaAssociada = vendaRepository.existsByCarro_Id(id);
+            if (!temVendaAssociada) {
+                throw new BusinessRuleException("Não é possível mudar o status para 'Vendido' sem uma venda associada.");
+            }
+        }
+
+        // Regra 4: Se o status for "Em manutenção", o carro não pode ter venda futura (agendada).
+        if ("Em manutenção".equalsIgnoreCase(novoStatus.getDescricao())) {
+            boolean temVendaAgendada = vendaRepository.existsByCarro_IdAndDataVendaAfter(id, LocalDate.now());
+            if (temVendaAgendada) {
+                throw new BusinessRuleException("Não é possível colocar o carro em manutenção com uma venda agendada.");
+            }
+        }
+
+        carro.setStatus(novoStatus);
+        return carroRepository.save(carro);
+    }
 }
+
+

@@ -52,7 +52,7 @@ public class CarroModel {
     @NotNull(message = "O campo é obrigatório")
     private LocalDate dataCadastro;
 
-
+    /*
     @Column(name = "modeloId", nullable = false)
     @NotNull(message = "O campo é obrigatório")
     private int modeloId;
@@ -65,8 +65,9 @@ public class CarroModel {
     @NotNull(message = "O campo é obrigatório")
     private int statusId;
 
+     */
 
-/*
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "modeloId", insertable = false, updatable = false)
     private ModeloModel  modelo;
@@ -79,7 +80,6 @@ public class CarroModel {
     @JoinColumn(name = "statusId", insertable = false, updatable = false)
     private StatusCarroModel status;
 
- */
 
 
 
@@ -90,6 +90,7 @@ public class CarroModel {
     }
 
 
-    public void setStatus(StatusCarroModel statusVendido) {
+    public void setStatus(StatusCarroModel status) {
+        this.status = status;
     }
 }

@@ -24,7 +24,7 @@ public class VendaModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "dataVenda", nullable = false)

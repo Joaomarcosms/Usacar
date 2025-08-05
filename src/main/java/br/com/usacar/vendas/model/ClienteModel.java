@@ -25,7 +25,7 @@ import java.util.Date;
 public class ClienteModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "nome",length = 128, nullable = false)
     @NotNull(message = "O nome tem que ser obrigatório")

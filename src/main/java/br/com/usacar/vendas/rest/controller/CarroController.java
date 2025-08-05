@@ -1,6 +1,7 @@
 package br.com.usacar.vendas.rest.controller;
 
 import br.com.usacar.vendas.model.CarroModel;
+import br.com.usacar.vendas.rest.dto.AtualizarStatusCarroDTO;
 import br.com.usacar.vendas.rest.dto.CarroDTO;
 import br.com.usacar.vendas.rest.dto.CarroEstoqueDTO;
 import br.com.usacar.vendas.rest.dto.CarroFiltroDTO;
@@ -11,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/carro")
@@ -31,8 +34,8 @@ public class CarroController {
     //Obtem todos os dados cadastrados
     @GetMapping
     public ResponseEntity<List<CarroDTO>> obterTodos() {
-    List<CarroDTO> carroDTOList = carroService.obterTodos();
-    return ResponseEntity.ok(carroDTOList);
+        List<CarroDTO> carroDTOList = carroService.obterTodos();
+        return ResponseEntity.ok(carroDTOList);
     }
 
     @GetMapping("/estoque")
@@ -69,10 +72,27 @@ public class CarroController {
         return ResponseEntity.status(HttpStatus.OK).body(novoCarroDTO);
     }
 
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Map<String, Object>> atualizarStatus(
+            @PathVariable Integer id,
+            @RequestBody @Valid AtualizarStatusCarroDTO dto) {
+
+        CarroModel carroAtualizado = carroService.atualizarStatusCarro(id, dto.getNovoStatus());
+
+        Map<String, Object> resposta = new HashMap<>();
+        resposta.put("mensagem", "Status atualizado com sucesso.");
+        resposta.put("carroId", carroAtualizado.getId());
+        resposta.put("statusAtual", carroAtualizado.getStatus().toString());
+
+        return ResponseEntity.ok(resposta);
+    }
+
     //Deleta dados desejados do banco
     @DeleteMapping
     public ResponseEntity<String> deletar(@Valid @RequestBody CarroModel carroExistente) {
+        // Chamada correta: usando a instância 'carroService'
         carroService.deletar(carroExistente);
         return ResponseEntity.ok().body("Deletado com sucesso!!");
     }
 }
+

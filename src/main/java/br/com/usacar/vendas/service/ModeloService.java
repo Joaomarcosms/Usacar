@@ -47,14 +47,14 @@ public class ModeloService {
     @Transactional
     public ModeloDTO salvar(ModeloDTO novoModeloDTO) {
         try {
-            Optional<MarcaModel> marca = marcaRepository.findById(novoModeloDTO.getMarcaid());
+            Optional<MarcaModel> marca = marcaRepository.findById(novoModeloDTO.getMarca().getId());
             if (marca.isEmpty()) {
-                throw new ObjectNotFoundException("Marca com ID " + novoModeloDTO.getMarcaid() + " não encontrada");
+                throw new ObjectNotFoundException("Marca com ID " + novoModeloDTO.getMarca().getId() + " não encontrada");
             }
 
             ModeloModel modelo = new ModeloModel();
             modelo.setNome(novoModeloDTO.getNome());
-            modelo.setMarcaId(novoModeloDTO.getMarcaid());
+            modelo.setMarca(marca.get());
 
             return modeloRepository.save(modelo).toDTO();
 
