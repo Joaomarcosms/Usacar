@@ -5,11 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ModeloRepository extends JpaRepository<ModeloModel, Integer> {
-    List<ModeloModel> findByNome (String pNome);
-
+    Optional<ModeloModel> findByNome(String pNome);
 
     boolean existsByNome(String pNome);
+
+    List<ModeloModel> findAllByMarcaId(Integer marcaId);
 }

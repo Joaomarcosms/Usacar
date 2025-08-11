@@ -20,20 +20,26 @@ public class ModeloController {
     private ModeloService modeloService;
 
     //Consultar dados por ID
+    @GetMapping
+    public ResponseEntity<List<ModeloDTO>> obterModelosPorMarca(@RequestParam(required = false) Integer marcaId) {
+        if (marcaId != null) {
+            List<ModeloDTO> modelos = modeloService.obterPorMarcaId(marcaId);
+            return ResponseEntity.ok(modelos);
+        }
+        // Se o marcaId não for fornecido, retorne todos os modelos
+        List<ModeloDTO> modelos = modeloService.obterTodos();
+        return ResponseEntity.ok(modelos);
+    }
+
+    // Consultar dados por ID
     @GetMapping("/{id}")
     public ResponseEntity<ModeloDTO> obter(@PathVariable int id) {
         ModeloDTO modeloDTO = modeloService.obterPorId(id);
         return ResponseEntity.status(HttpStatus.OK).body(modeloDTO);
     }
 
-    //Obtem todos os dados cadastrados
-    @GetMapping
-    public ResponseEntity<List<ModeloDTO>> obterTodos() {
-        List<ModeloDTO> modeloDTOList = modeloService.obterTodos();
-        return ResponseEntity.ok(modeloDTOList);
-    }
 
-    //Inserção de dados desejados
+        //Inserção de dados desejados
     @PostMapping
     public ResponseEntity<ModeloDTO> cadastrarModelo(@RequestBody ModeloDTO novoModeloDTO) {
         ModeloDTO modeloSalvo = modeloService.salvar(novoModeloDTO);

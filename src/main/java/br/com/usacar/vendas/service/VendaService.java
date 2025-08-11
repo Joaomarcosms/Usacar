@@ -4,15 +4,13 @@ import br.com.usacar.vendas.exception.*;
 import br.com.usacar.vendas.model.*;
 import br.com.usacar.vendas.repository.*;
 
-import br.com.usacar.vendas.rest.dto.MarcaRankingDTO;
-import br.com.usacar.vendas.rest.dto.VendaDTO;
-import br.com.usacar.vendas.rest.dto.VendaHistoricoDTO;
-import br.com.usacar.vendas.rest.dto.VendaRelatorioDTO;
+import br.com.usacar.vendas.rest.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -97,6 +95,9 @@ public class VendaService {
     @Transactional
     public VendaDTO salvar(VendaModel novaVenda) {
         try {
+            if (novaVenda.getId() != null && novaVenda.getId().equals(0)) {
+                novaVenda.setId(null);
+            }
 
             if (novaVenda.getId() != null && vendaRepository.existsById(novaVenda.getId())) {
                 throw new ConstraintException("Já existe uma venda com esse ID " + novaVenda.getId());
@@ -167,27 +168,26 @@ public class VendaService {
      */
 
     @Transactional
-    public void deletar(VendaModel vendaExistente){
+    public void deletar(Integer id){
         try {
-            if(!vendaRepository.existsById(vendaExistente.getId())){
-                throw new ConstraintException("Venda inexistente na base de dados " );
-
+            if(!vendaRepository.existsById(id)){
+                throw new ConstraintException("Venda inexistente na base de dados com o ID: " + id);
             }
 
-            vendaRepository.deleteById(vendaExistente.getId());
+            vendaRepository.deleteById(id);
         } catch (DataIntegrityException e){
-            throw new DataIntegrityException("Erro!! Não foi possível deletar a venda " + vendaExistente.getId());
+            throw new DataIntegrityException("Erro!! Não foi possível deletar a venda " + id);
         } catch (ConstraintException e){
             if (e.getMessage() == null || e.getMessage().isBlank()){
-                throw new ConstraintException("Erro!! Não foi possível deletar a venda " + vendaExistente.getId() + "Restrição de integridade de dados");
+                throw new ConstraintException("Erro!! Não foi possível deletar a venda " + id + "Restrição de integridade de dados");
             }
             throw e;
         } catch (BusinessRuleException e){
-            throw new BusinessRuleException("Erro! Não foi possível deletar a venda " + vendaExistente.getId() + "Violação da regra de negócio!");
-        } catch (SQLException e){ // SQLException deve ser evitada na camada de serviço, use exceções Spring Data
-            throw new SQLException("Erro! Não foi possível  deletar a venda " + vendaExistente.getId() + "Falha na conexão com o banco de dados");
+            throw new BusinessRuleException("Erro! Não foi possível deletar a venda " + id + "Violação da regra de negócio!");
+        } catch (SQLException e){
+            throw new SQLException("Erro! Não foi possível  deletar a venda " + id + "Falha na conexão com o banco de dados");
         } catch (ObjectNotFoundException e){
-            throw  new ObjectNotFoundException("Erro! Não foi possível deletar a venda " + vendaExistente.getId() + "Não encontrado no banco de dados!");
+            throw  new ObjectNotFoundException("Erro! Não foi possível deletar a venda " + id + "Não encontrado no banco de dados!");
         }
     }
 
@@ -232,6 +232,48 @@ public class VendaService {
                     venda.getVendedor().getNome()
             );
         }).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<ComissaoReajusteResponseDTO> reajustarComissao(ComissaoReajusteDTO dto) {
+        List<ComissaoReajusteResponseDTO> resultados = new ArrayList<>();
+
+        // 1. Obter os vendedores que se qualificam para o reajuste
+        List<Object[]> vendedoresQualificados = vendaRepository.findVendasTotaisParaReajuste(
+                dto.getDataInicio(), dto.getDataFim(), dto.getValorMinimoTotalVendas());
+
+        // 2. Iterar sobre os resultados
+        for (Object[] result : vendedoresQualificados) {
+            Integer vendedorId = (Integer) result[0];
+            String vendedorNome = (String) result[1];
+            Double valorTotalVendas = (Double) result[2];
+            Double comissaoAnterior = (Double) result[3];
+
+            // Calcular a nova comissão total
+            Double comissaoReajustada = comissaoAnterior * (1 + dto.getPercentualReajuste() / 100.0);
+
+            // Adicionar ao DTO de resposta
+            resultados.add(new ComissaoReajusteResponseDTO(
+                    vendedorNome,
+                    valorTotalVendas,
+                    comissaoAnterior,
+                    comissaoReajustada
+            ));
+
+            // 3. Se não for simulação, atualizar o valor de comissão no banco de dados
+            if (!dto.isSimulacao()) {
+                List<VendaModel> vendasDoVendedor = vendaRepository.findVendasByVendedorIdAndPeriodo(
+                        vendedorId, dto.getDataInicio(), dto.getDataFim());
+
+                vendasDoVendedor.forEach(venda -> {
+                    Double comissaoOriginal = venda.getValorComissao();
+                    Double novaComissao = comissaoOriginal * (1 + dto.getPercentualReajuste() / 100.0);
+                    venda.setValorComissao(novaComissao);
+                    vendaRepository.save(venda); // Salva cada venda individualmente
+                });
+            }
+        }
+        return resultados;
     }
 
     @Transactional(readOnly = true)

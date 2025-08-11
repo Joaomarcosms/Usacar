@@ -1,10 +1,7 @@
 package br.com.usacar.vendas.rest.controller;
 
 import br.com.usacar.vendas.model.CarroModel;
-import br.com.usacar.vendas.rest.dto.AtualizarStatusCarroDTO;
-import br.com.usacar.vendas.rest.dto.CarroDTO;
-import br.com.usacar.vendas.rest.dto.CarroEstoqueDTO;
-import br.com.usacar.vendas.rest.dto.CarroFiltroDTO;
+import br.com.usacar.vendas.rest.dto.*;
 import br.com.usacar.vendas.service.CarroService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +53,12 @@ public class CarroController {
         filtro.setStatus(status);
 
         return carroService.consultarEstoque(filtro);
+    }
+
+    @GetMapping("/{id}/historico-status")
+    public ResponseEntity<List<HistoricoStatusCarroDTO>> obterHistoricoStatus(@PathVariable Integer id) {
+        List<HistoricoStatusCarroDTO> historico = carroService.obterHistoricoStatus(id);
+        return ResponseEntity.ok(historico);
     }
 
     //Inserção de dados desejados

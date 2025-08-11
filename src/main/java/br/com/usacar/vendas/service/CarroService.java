@@ -2,20 +2,21 @@ package br.com.usacar.vendas.service;
 
 import br.com.usacar.vendas.exception.*;
 import br.com.usacar.vendas.model.CarroModel;
+import br.com.usacar.vendas.model.HistoricoStatusCarroModel;
 import br.com.usacar.vendas.model.StatusCarroModel;
 import br.com.usacar.vendas.model.VendaModel;
 import br.com.usacar.vendas.repository.CarroRepository;
+import br.com.usacar.vendas.repository.HistoricoStatusCarroRepository;
 import br.com.usacar.vendas.repository.StatusCarroRepository;
 import br.com.usacar.vendas.repository.VendaRepository;
-import br.com.usacar.vendas.rest.dto.AtualizarStatusCarroDTO;
-import br.com.usacar.vendas.rest.dto.CarroDTO;
-import br.com.usacar.vendas.rest.dto.CarroEstoqueDTO;
-import br.com.usacar.vendas.rest.dto.CarroFiltroDTO;
+import br.com.usacar.vendas.rest.dto.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,12 @@ public class CarroService {
 
     @Autowired
     private StatusCarroRepository statusCarroRepository;
+
+    @Autowired
+    private HistoricoStatusCarroRepository historicoStatusCarroRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
 
     public List<CarroEstoqueDTO> consultarEstoque(CarroFiltroDTO filtro) {
@@ -69,8 +76,22 @@ public class CarroService {
             if(carroRepository.existsByPlaca(novoCarro.getPlaca())){
                 throw new ConstraintException("Já existe um veículo cadastrado com esta placa " + novoCarro.getPlaca());
             }
+            novoCarro.setDataCadastro(LocalDate.now());
+
             //Salvar o carro na base de dados.
-            return carroRepository.save(novoCarro).toDTO();
+            CarroModel carroSalvo = carroRepository.save(novoCarro);
+
+            // NOVO: Adiciona log inicial quando o carro é salvo
+            HistoricoStatusCarroModel logInicial = HistoricoStatusCarroModel.builder()
+                    .carro(carroSalvo)
+                    .statusAnterior("Não definido")
+                    .novoStatus(carroSalvo.getStatus().getDescricao())
+                    .dataHora(LocalDateTime.now())
+                    .usuarioResponsavel("Sistema") // Ou o usuário logado
+                    .build();
+            historicoStatusCarroRepository.save(logInicial);
+
+            return modelMapper.map(carroSalvo, CarroDTO.class);
 
         } catch (DataIntegrityException e){
             throw new DataIntegrityException("Erro!! Não foi possivel salvar o veículo " + novoCarro.getPlaca());
@@ -159,6 +180,19 @@ public class CarroService {
 
         StatusCarroModel statusAtual = carro.getStatus();
 
+        // NOVO: Regra de log do histórico
+        // Verifica se o status realmente mudou antes de registrar o log
+        if (!statusAtual.getDescricao().equalsIgnoreCase(novoStatus.getDescricao())) {
+            HistoricoStatusCarroModel log = HistoricoStatusCarroModel.builder()
+                    .carro(carro)
+                    .statusAnterior(statusAtual.getDescricao())
+                    .novoStatus(novoStatus.getDescricao())
+                    .dataHora(LocalDateTime.now())
+                    .usuarioResponsavel("admin@usacar.com") // Substitua pelo usuário autenticado
+                    .build();
+            historicoStatusCarroRepository.save(log);
+        }
+
         // Regra 3: Se o status atual for Vendido, o carro não pode mais retornar
         // A comparação agora é feita pela descrição do status, não por um enum
         if ("Vendido".equalsIgnoreCase(statusAtual.getDescricao()) && !"Vendido".equalsIgnoreCase(novoStatus.getDescricao())) {
@@ -183,6 +217,18 @@ public class CarroService {
 
         carro.setStatus(novoStatus);
         return carroRepository.save(carro);
+    }
+
+    @Transactional
+    public List<HistoricoStatusCarroDTO> obterHistoricoStatus(Integer carroId) {
+        CarroModel carro = carroRepository.findById(carroId)
+                .orElseThrow(() -> new ObjectNotFoundException("Carro com ID " + carroId + " não encontrado."));
+
+        List<HistoricoStatusCarroModel> historico = historicoStatusCarroRepository.findAllByCarroIdOrderByDataHoraDesc(carroId);
+
+        return historico.stream()
+                .map(log -> modelMapper.map(log, HistoricoStatusCarroDTO.class))
+                .collect(Collectors.toList());
     }
 }
 

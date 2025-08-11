@@ -40,6 +40,12 @@ public class ModeloService {
         return modelos.stream().map(modelo -> modelo.toDTO()).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<ModeloDTO> obterPorMarcaId(Integer marcaId) {
+        List<ModeloModel> modelos = modeloRepository.findAllByMarcaId(marcaId);
+        return modelos.stream().map(modelo -> modelo.toDTO()).collect(Collectors.toList());
+    }
+
     /*
      *Irá salvar os modelos na base de dados
      */
@@ -129,5 +135,7 @@ public class ModeloService {
             throw new ObjectNotFoundException("Erro! Não foi possível deletar o modelo " + modeloExistente.getId() + "Não encontrado no banco de dados!");
         }
     }
+
+
 }
 

@@ -2,9 +2,7 @@ package br.com.usacar.vendas.rest.controller;
 
 import br.com.usacar.vendas.model.VendaModel;
 import br.com.usacar.vendas.repository.VendaRepository;
-import br.com.usacar.vendas.rest.dto.MarcaRankingDTO;
-import br.com.usacar.vendas.rest.dto.VendaDTO;
-import br.com.usacar.vendas.rest.dto.VendaRelatorioDTO;
+import br.com.usacar.vendas.rest.dto.*;
 import br.com.usacar.vendas.service.CarroService;
 import br.com.usacar.vendas.service.VendaService;
 import jakarta.validation.Valid;
@@ -66,6 +64,12 @@ public class VendaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(vendaSalva);
     }
 
+    @PostMapping("/comissoes/reajustar")
+    public ResponseEntity<List<ComissaoReajusteResponseDTO>> reajustarComissao(@Valid @RequestBody ComissaoReajusteDTO dto) {
+        List<ComissaoReajusteResponseDTO> resultados = vendaService.reajustarComissao(dto);
+        return ResponseEntity.ok(resultados);
+    }
+
 
     //Atualização de dados já existentes em banco
     @PutMapping
@@ -75,9 +79,9 @@ public class VendaController {
     }
 
     //Deleta dados desejados do banco
-    @DeleteMapping
-    public ResponseEntity<String> deletar(@Valid @RequestBody VendaModel vendaExistente) {
-        vendaService.deletar(vendaExistente);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletar(@PathVariable Integer id) {
+        vendaService.deletar(id); // O service agora vai receber o ID diretamente
         return ResponseEntity.ok().body("Deletado com sucesso!!");
     }
 

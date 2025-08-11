@@ -30,6 +30,7 @@ public class ModeloModel {
     @JoinColumn(name = "marcaId", insertable = false, updatable = false)
     private MarcaModel marca;
 
+
     /*
     @Column(name = "marcaId")
     @NotNull(message = "O campo é obrigatório")
@@ -39,11 +40,14 @@ public class ModeloModel {
 
     //Conversão de Model para DTO
     public ModeloDTO toDTO() {
-        ModelMapper modelMapper = new ModelMapper();
-        // Mapeamento explícito para a marca aninhada, se necessário
-        modelMapper.typeMap(ModeloModel.class, ModeloDTO.class).addMappings(mapper -> {
-            mapper.map(src -> src.getMarca() != null ? src.getMarca().toDTO() : null, ModeloDTO::setMarca);
-        });
-        return modelMapper.map(this, ModeloDTO.class);
+        ModeloDTO dto = new ModeloDTO();
+        dto.setId(this.id);
+        dto.setNome(this.nome);
+        if(this.marca != null){
+            // supondo que MarcaModel tenha também toDTO()
+            dto.setMarca(this.marca.toDTO());
+        }
+        return dto;
     }
+
 }
