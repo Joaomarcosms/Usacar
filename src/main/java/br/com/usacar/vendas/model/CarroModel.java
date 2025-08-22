@@ -22,7 +22,7 @@ import java.time.LocalDate;
 public class CarroModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
 
     @Column(name = "anoFabricacao", nullable = false)
@@ -69,15 +69,15 @@ public class CarroModel {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "modeloId", insertable = false, updatable = false)
+    @JoinColumn(name = "modeloId")
     private ModeloModel  modelo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "corId", insertable = false, updatable = false)
+    @JoinColumn(name = "corId")
     private CorModel cor;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "statusId", insertable = false, updatable = false)
+    @JoinColumn(name = "statusId")
     private StatusCarroModel status;
 
 

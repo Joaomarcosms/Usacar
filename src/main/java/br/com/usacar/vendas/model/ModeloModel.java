@@ -27,7 +27,7 @@ public class ModeloModel {
     private String nome;
 
     @ManyToOne
-    @JoinColumn(name = "marcaId", insertable = false, updatable = false)
+    @JoinColumn(name = "marca_id", insertable = false, updatable = false)
     private MarcaModel marca;
 
 

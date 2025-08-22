@@ -71,41 +71,36 @@ public class CarroService {
      */
 
     @Transactional
-    public CarroDTO salvar(CarroModel novoCarro){
-        try {
-            if(carroRepository.existsByPlaca(novoCarro.getPlaca())){
-                throw new ConstraintException("Já existe um veículo cadastrado com esta placa " + novoCarro.getPlaca());
-            }
-            novoCarro.setDataCadastro(LocalDate.now());
-
-            //Salvar o carro na base de dados.
-            CarroModel carroSalvo = carroRepository.save(novoCarro);
-
-            // NOVO: Adiciona log inicial quando o carro é salvo
-            HistoricoStatusCarroModel logInicial = HistoricoStatusCarroModel.builder()
-                    .carro(carroSalvo)
-                    .statusAnterior("Não definido")
-                    .novoStatus(carroSalvo.getStatus().getDescricao())
-                    .dataHora(LocalDateTime.now())
-                    .usuarioResponsavel("Sistema") // Ou o usuário logado
-                    .build();
-            historicoStatusCarroRepository.save(logInicial);
-
-            return modelMapper.map(carroSalvo, CarroDTO.class);
-
-        } catch (DataIntegrityException e){
-            throw new DataIntegrityException("Erro!! Não foi possivel salvar o veículo " + novoCarro.getPlaca());
-        } catch (ConstraintException e){
-            if (e.getMessage() == null || e.getMessage().isBlank()){
-                throw new ConstraintException("Erro de Restrição de integridade ao salvar o veículo " + novoCarro.getPlaca());
-            }
-            throw e;
-        } catch (BusinessRuleException e){
-            throw new BusinessRuleException("Erro!! Não foi possível salvar o veículo" + novoCarro.getPlaca() );
-        } catch (SQLException e){
-            throw new SQLException("Erro!! Não foi possível salvar o veículo " + novoCarro.getPlaca());
+    public CarroDTO salvar(CarroModel novoCarro) {
+        // 1. Validação inicial (seu código original)
+        if (carroRepository.existsByPlaca(novoCarro.getPlaca())) {
+            throw new ConstraintException("Já existe um veículo cadastrado com esta placa " + novoCarro.getPlaca());
         }
+        novoCarro.setDataCadastro(LocalDate.now());
+
+        // 2. Salva a entidade principal do carro
+        CarroModel carroSalvo = carroRepository.save(novoCarro);
+
+        // 3. --- CORREÇÃO APLICADA AQUI ---
+        // Busca a entidade Status completa para garantir que a descrição não seja nula.
+        StatusCarroModel statusCompleto = statusCarroRepository.findById(carroSalvo.getStatus().getId())
+                .orElseThrow(() -> new ObjectNotFoundException("Status com ID " + carroSalvo.getStatus().getId() + " não encontrado."));
+
+        // 4. Cria o registro de histórico usando a descrição do status completo
+        HistoricoStatusCarroModel logInicial = HistoricoStatusCarroModel.builder()
+                .carro(carroSalvo)
+                .statusAnterior("Não definido") // Correto, pois é um carro novo
+                .novoStatus(statusCompleto.getDescricao()) // Usa a descrição do objeto que foi buscado no banco
+                .dataHora(LocalDateTime.now())
+                .usuarioResponsavel("Sistema") // Ou o usuário logado
+                .build();
+        historicoStatusCarroRepository.save(logInicial);
+
+        // 5. Retorna o DTO
+        return modelMapper.map(carroSalvo, CarroDTO.class);
+
     }
+
 
     /*
     *Irá atualizar o veículo na base de dadas com as devidas exceptions

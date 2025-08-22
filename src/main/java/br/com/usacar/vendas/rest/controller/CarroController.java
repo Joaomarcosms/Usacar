@@ -68,6 +68,7 @@ public class CarroController {
         return ResponseEntity.status(HttpStatus.CREATED).body(novoCarroDTO);
     }
 
+    /*
     //Atualização de dados já existentes em banco
     @PutMapping
     public ResponseEntity<CarroDTO> atualizar (@Valid @RequestBody CarroModel carroExistente) {
@@ -75,7 +76,22 @@ public class CarroController {
         return ResponseEntity.status(HttpStatus.OK).body(novoCarroDTO);
     }
 
+     */
+
     @PutMapping("/{id}/status")
+    public ResponseEntity<CarroDTO> atualizar (
+            @PathVariable Integer id,
+            @Valid @RequestBody CarroModel carroExistente) {
+
+        // Defina o ID no objeto carroExistente para garantir atualização correta
+        carroExistente.setId(id);
+
+        CarroDTO carroAtualizado = carroService.atualizar(carroExistente);
+        return ResponseEntity.status(HttpStatus.OK).body(carroAtualizado);
+    }
+
+
+    @PatchMapping("/{id}/status")
     public ResponseEntity<Map<String, Object>> atualizarStatus(
             @PathVariable Integer id,
             @RequestBody @Valid AtualizarStatusCarroDTO dto) {

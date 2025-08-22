@@ -72,4 +72,18 @@ public interface VendaRepository extends JpaRepository<VendaModel, Integer> {
     List<VendaModel> findVendasByVendedorIdAndPeriodo(@Param("vendedorId") Integer vendedorId,
                                                       @Param("dataInicio") LocalDate dataInicio,
                                                       @Param("dataFim") LocalDate dataFim);
+
+
+    @Query("SELECT v FROM VendaModel v " +
+            "JOIN FETCH v.vendedor " +
+            "JOIN FETCH v.cliente " +
+            "JOIN FETCH v.carro c " +
+            "JOIN FETCH c.modelo m " +
+            "JOIN FETCH m.marca " +
+            "WHERE v.statusVenda = 'FINALIZADA' AND v.dataVenda BETWEEN :dataInicio AND :dataFim")
+    List<VendaModel> findVendasFinalizadasByPeriodo(
+            @Param("dataInicio") LocalDate dataInicio,
+            @Param("dataFim") LocalDate dataFim
+    );
+
 }

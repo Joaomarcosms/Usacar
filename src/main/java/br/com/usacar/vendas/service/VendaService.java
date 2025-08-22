@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -103,6 +104,8 @@ public class VendaService {
                 throw new ConstraintException("Já existe uma venda com esse ID " + novaVenda.getId());
             }
 
+            novaVenda.setStatusVenda("FINALIZADA");
+
             // Salva a venda
             VendaModel vendaSalva = vendaRepository.save(novaVenda);
 
@@ -161,6 +164,45 @@ public class VendaService {
         } catch (ObjectNotFoundException e){
             throw new ObjectNotFoundException("Erro!! Não foi possível atualizar os dados da venda" + vendaExistente.getId() +  "Não encontrado no banco de dados!");
         }
+    }
+
+
+    /**
+     * NOVO: Método para cancelar uma venda e reverter o status do carro.
+     */
+    @Transactional
+    public VendaCancelamentoResponseDTO cancelarVenda(Integer vendaId) {
+        // 1. Encontrar a venda
+        VendaModel venda = vendaRepository.findById(vendaId)
+                .orElseThrow(() -> new ObjectNotFoundException("Venda com ID " + vendaId + " não encontrada."));
+
+        // 2. Regra de Negócio: Venda só pode ser cancelada em até 7 dias
+        long diasDesdeVenda = ChronoUnit.DAYS.between(venda.getDataVenda(), LocalDate.now());
+        if (diasDesdeVenda > 7) {
+            throw new BusinessRuleException("A venda só pode ser cancelada até 7 dias após a data da venda.");
+        }
+
+        // 3. Encontrar o carro
+        CarroModel carro = venda.getCarro();
+        if (carro == null) {
+            throw new BusinessRuleException("Carro associado à venda não encontrado.");
+        }
+
+        // 4. Reverter o status do carro para "Disponível"
+        StatusCarroModel statusDisponivel = statusCarroRepository.findByDescricaoIgnoreCase("Disponível")
+                .orElseThrow(() -> new ObjectNotFoundException("Status 'Disponível' não encontrado."));
+
+        carro.setStatus(statusDisponivel);
+        carroRepository.save(carro);
+
+        // 5. Deletar a venda
+        vendaRepository.delete(venda);
+
+        return new VendaCancelamentoResponseDTO(
+                "Venda cancelada com sucesso.",
+                carro.getId(),
+                statusDisponivel.getDescricao()
+        );
     }
 
     /*

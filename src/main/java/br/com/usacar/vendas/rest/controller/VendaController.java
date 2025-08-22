@@ -70,6 +70,12 @@ public class VendaController {
         return ResponseEntity.ok(resultados);
     }
 
+    @PostMapping("/{id}/cancelar")
+    public ResponseEntity<VendaCancelamentoResponseDTO> cancelarVenda(@PathVariable Integer id) {
+        VendaCancelamentoResponseDTO resposta = vendaService.cancelarVenda(id);
+        return ResponseEntity.ok(resposta);
+    }
+
 
     //Atualização de dados já existentes em banco
     @PutMapping

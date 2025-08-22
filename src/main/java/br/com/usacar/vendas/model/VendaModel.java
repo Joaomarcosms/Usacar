@@ -26,6 +26,9 @@ public class VendaModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "status_venda", nullable = false)
+    private String statusVenda;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "dataVenda", nullable = false)
     @NotNull(message = "O campo é obrigatório")
@@ -38,20 +41,6 @@ public class VendaModel {
     @Column(name = "valorComissao", nullable = false)
     @NotNull(message = "O campo é obrigatório")
     private double valorComissao;
-    /*
-    @Column(name = "carroId", nullable = false)
-    @NotNull(message = "O campo é obrigatório")
-    private int carroId;
-
-    @Column(name = "clienteId", nullable = false)
-    @NotNull(message = "O campo é obrigatório")
-    private int clienteId;
-
-    @Column(name = "vendedorId", nullable = false)
-    @NotNull(message = "O campo é obrigatório")
-    private int vendedorId;
-
-     */
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "carroId", nullable = false)
