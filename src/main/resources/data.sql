@@ -1,3 +1,6 @@
+--Usuários
+INSERT INTO perfil (nome) VALUES ('ADMIN'), ('VENDEDOR');
+
 -- Marca
 INSERT INTO Marca (id, nome)
 VALUES (1, 'Toyota'),
