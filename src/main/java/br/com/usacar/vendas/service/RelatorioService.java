@@ -24,14 +24,14 @@ public class RelatorioService {
 
     @Transactional(readOnly = true)
     public List<RelatorioVendasDTO> gerarRelatorioVendasPorPeriodo(LocalDate dataInicio, LocalDate dataFim) {
-        // 1. Busca as vendas no período usando a query que você já tem
+        // Busca as vendas no período
         List<VendaModel> vendasNoPeriodo = vendaRepository.findVendasFinalizadasByPeriodo(dataInicio, dataFim);
 
-        // 2. Agrupa as vendas por vendedor (usando o objeto VendedorModel como chave)
+        // Agrupa as vendas por vendedor
         Map<VendedorModel, List<VendaModel>> vendasPorVendedor = vendasNoPeriodo.stream()
                 .collect(Collectors.groupingBy(VendaModel::getVendedor));
 
-        // 3. Transforma o mapa no formato do DTO de relatório
+        // Transforma o mapa no formato do DTO de relatório
         return vendasPorVendedor.entrySet().stream()
                 .map(entry -> {
                     VendedorModel vendedor = entry.getKey();
@@ -52,8 +52,7 @@ public class RelatorioService {
                                         venda.getCarro().getAnoModelo());
                                 detalhe.setVeiculo(veiculo);
 
-                                // --- CORREÇÃO APLICADA ---
-                                // Converte o 'double' do seu modelo para 'BigDecimal' no DTO
+                                // Converte o 'double' do modelo para 'BigDecimal' no DTO
                                 detalhe.setValor(BigDecimal.valueOf(venda.getValorVenda()));
                                 return detalhe;
                             }).collect(Collectors.toList());

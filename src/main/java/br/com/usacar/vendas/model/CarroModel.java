@@ -52,22 +52,6 @@ public class CarroModel {
     @NotNull(message = "O campo é obrigatório")
     private LocalDate dataCadastro;
 
-    /*
-    @Column(name = "modeloId", nullable = false)
-    @NotNull(message = "O campo é obrigatório")
-    private int modeloId;
-
-    @Column(name = "corId", nullable = false)
-    @NotNull(message = "O campo é obrigatório")
-    private int corId;
-
-    @Column(name = "statusId", nullable = false)
-    @NotNull(message = "O campo é obrigatório")
-    private int statusId;
-
-     */
-
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "modeloId")
     private ModeloModel  modelo;

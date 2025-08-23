@@ -36,8 +36,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        // --- CORREÇÃO APLICADA AQUI ---
-                        // Permite todos os pedidos de verificação (preflight) OPTIONS
+                        // Permite todos os pedidos de verificação
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // Mantém a sua regra de permitir todas as outras requisições
                         .anyRequest().permitAll()
@@ -50,15 +49,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Permite pedidos de qualquer origem. Para produção, restrinja a domínios específicos.
+        // Permite pedidos de qualquer origem.
         configuration.setAllowedOrigins(Arrays.asList("*"));
-        // Permite os métodos HTTP mais comuns.
+        // Permite os métodos HTTP
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         // Permite todos os cabeçalhos.
         configuration.setAllowedHeaders(Arrays.asList("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Aplica esta configuração a todos os caminhos da sua API.
+        // Aplica esta configuração a todos os caminhos da API.
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }

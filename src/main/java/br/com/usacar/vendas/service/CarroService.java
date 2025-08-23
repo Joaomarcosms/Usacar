@@ -64,15 +64,13 @@ public class CarroService {
     }
 
 
-
-
     /*
     *Irá salvar o veículo na base de dados com as devidas exceptions
      */
 
     @Transactional
     public CarroDTO salvar(CarroModel novoCarro) {
-        // 1. Validação inicial (seu código original)
+        // 1. Validação inicial
         if (carroRepository.existsByPlaca(novoCarro.getPlaca())) {
             throw new ConstraintException("Já existe um veículo cadastrado com esta placa " + novoCarro.getPlaca());
         }
@@ -81,7 +79,6 @@ public class CarroService {
         // 2. Salva a entidade principal do carro
         CarroModel carroSalvo = carroRepository.save(novoCarro);
 
-        // 3. --- CORREÇÃO APLICADA AQUI ---
         // Busca a entidade Status completa para garantir que a descrição não seja nula.
         StatusCarroModel statusCompleto = statusCarroRepository.findById(carroSalvo.getStatus().getId())
                 .orElseThrow(() -> new ObjectNotFoundException("Status com ID " + carroSalvo.getStatus().getId() + " não encontrado."));
@@ -89,10 +86,10 @@ public class CarroService {
         // 4. Cria o registro de histórico usando a descrição do status completo
         HistoricoStatusCarroModel logInicial = HistoricoStatusCarroModel.builder()
                 .carro(carroSalvo)
-                .statusAnterior("Não definido") // Correto, pois é um carro novo
-                .novoStatus(statusCompleto.getDescricao()) // Usa a descrição do objeto que foi buscado no banco
+                .statusAnterior("Não definido")
+                .novoStatus(statusCompleto.getDescricao())
                 .dataHora(LocalDateTime.now())
-                .usuarioResponsavel("Sistema") // Ou o usuário logado
+                .usuarioResponsavel("Sistema")
                 .build();
         historicoStatusCarroRepository.save(logInicial);
 
@@ -165,7 +162,7 @@ public class CarroService {
 
     @Transactional
     public CarroModel atualizarStatusCarro(Integer id, String novoStatusStr) {
-        // Regra 1: Só é permitido alterar status de carros existentes.
+        // Só é permitido alterar status de carros existentes.
         CarroModel carro = carroRepository.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Carro com ID " + id + " não encontrado."));
 
@@ -175,26 +172,24 @@ public class CarroService {
 
         StatusCarroModel statusAtual = carro.getStatus();
 
-        // NOVO: Regra de log do histórico
-        // Verifica se o status realmente mudou antes de registrar o log
+        // Verifica se o status mudou antes de registrar o log
         if (!statusAtual.getDescricao().equalsIgnoreCase(novoStatus.getDescricao())) {
             HistoricoStatusCarroModel log = HistoricoStatusCarroModel.builder()
                     .carro(carro)
                     .statusAnterior(statusAtual.getDescricao())
                     .novoStatus(novoStatus.getDescricao())
                     .dataHora(LocalDateTime.now())
-                    .usuarioResponsavel("admin@usacar.com") // Substitua pelo usuário autenticado
+                    .usuarioResponsavel("admin@usacar.com")
                     .build();
             historicoStatusCarroRepository.save(log);
         }
 
-        // Regra 3: Se o status atual for Vendido, o carro não pode mais retornar
-        // A comparação agora é feita pela descrição do status, não por um enum
+        // Se o status atual for Vendido, o carro não pode mais retornar
         if ("Vendido".equalsIgnoreCase(statusAtual.getDescricao()) && !"Vendido".equalsIgnoreCase(novoStatus.getDescricao())) {
             throw new BusinessRuleException("Não é possível alterar o status de um carro já vendido para um status anterior.");
         }
 
-        // Regra 2: Se o novo status for Vendido, deve haver registro de venda.
+        // Se o novo status for Vendido, deve haver registro de venda.
         if ("Vendido".equalsIgnoreCase(novoStatus.getDescricao())) {
             boolean temVendaAssociada = vendaRepository.existsByCarro_Id(id);
             if (!temVendaAssociada) {
@@ -202,7 +197,7 @@ public class CarroService {
             }
         }
 
-        // Regra 4: Se o status for "Em manutenção", o carro não pode ter venda futura (agendada).
+        // Se o status for "Em manutenção", o carro não pode ter venda futura (agendada).
         if ("Em manutenção".equalsIgnoreCase(novoStatus.getDescricao())) {
             boolean temVendaAgendada = vendaRepository.existsByCarro_IdAndDataVendaAfter(id, LocalDate.now());
             if (temVendaAgendada) {

@@ -20,6 +20,7 @@ public class RelatorioController {
     @Autowired
     private RelatorioService relatorioService;
 
+    //Obter dados
     @GetMapping("/vendas")
     public ResponseEntity<List<RelatorioVendasDTO>> getRelatorioVendas(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,

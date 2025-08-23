@@ -8,5 +8,5 @@ public class UsuarioResponseDTO {
     private String nome;
     private String cpf;
     private String email;
-    private String perfil; // Apenas o nome do perfil
+    private String perfil;
 }

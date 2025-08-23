@@ -54,8 +54,6 @@ public class ClienteController {
     }
 
 
-
-
     //Inserção de dados desejados
     @PostMapping
     public ResponseEntity<ClienteDTO> salvar(@Valid @RequestBody ClienteModel novoCliente) {

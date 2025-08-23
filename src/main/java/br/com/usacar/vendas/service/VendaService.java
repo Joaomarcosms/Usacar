@@ -33,12 +33,6 @@ public class VendaService {
     @Autowired
     private StatusCarroRepository statusCarroRepository;
 
-    // Estes repositórios não são mais necessários para buscar Modelo/Cor
-    // diretamente no historico de vendas, pois o CarroModel já os contém.
-    // @Autowired
-    // private ModeloRepository modeloRepository;
-    // @Autowired
-    // private CorRepository corRepository;
 
     /*
     Método que converte DTO para entidade VendaModel
@@ -172,30 +166,30 @@ public class VendaService {
      */
     @Transactional
     public VendaCancelamentoResponseDTO cancelarVenda(Integer vendaId) {
-        // 1. Encontrar a venda
+        // Encontrar a venda
         VendaModel venda = vendaRepository.findById(vendaId)
                 .orElseThrow(() -> new ObjectNotFoundException("Venda com ID " + vendaId + " não encontrada."));
 
-        // 2. Regra de Negócio: Venda só pode ser cancelada em até 7 dias
+        // Venda só pode ser cancelada em até 7 dias
         long diasDesdeVenda = ChronoUnit.DAYS.between(venda.getDataVenda(), LocalDate.now());
         if (diasDesdeVenda > 7) {
             throw new BusinessRuleException("A venda só pode ser cancelada até 7 dias após a data da venda.");
         }
 
-        // 3. Encontrar o carro
+        // Encontrar o carro
         CarroModel carro = venda.getCarro();
         if (carro == null) {
             throw new BusinessRuleException("Carro associado à venda não encontrado.");
         }
 
-        // 4. Reverter o status do carro para "Disponível"
+        // Reverter o status do carro para "Disponível"
         StatusCarroModel statusDisponivel = statusCarroRepository.findByDescricaoIgnoreCase("Disponível")
                 .orElseThrow(() -> new ObjectNotFoundException("Status 'Disponível' não encontrado."));
 
         carro.setStatus(statusDisponivel);
         carroRepository.save(carro);
 
-        // 5. Deletar a venda
+        // Deletar a venda
         vendaRepository.delete(venda);
 
         return new VendaCancelamentoResponseDTO(
@@ -253,7 +247,6 @@ public class VendaService {
             CarroModel carro = venda.getCarro();
 
             // Acessando diretamente os objetos Modelo e Cor do CarroModel
-            // Não é necessário buscar novamente no repositório
             String nomeModelo = (carro.getModelo() != null) ? carro.getModelo().getNome() : "Modelo não encontrado";
             String nomeMarca = (carro.getModelo() != null && carro.getModelo().getMarca() != null) ? carro.getModelo().getMarca().getNome() : "Marca não encontrada";
 
@@ -280,11 +273,11 @@ public class VendaService {
     public List<ComissaoReajusteResponseDTO> reajustarComissao(ComissaoReajusteDTO dto) {
         List<ComissaoReajusteResponseDTO> resultados = new ArrayList<>();
 
-        // 1. Obter os vendedores que se qualificam para o reajuste
+        // Obter os vendedores para o reajuste
         List<Object[]> vendedoresQualificados = vendaRepository.findVendasTotaisParaReajuste(
                 dto.getDataInicio(), dto.getDataFim(), dto.getValorMinimoTotalVendas());
 
-        // 2. Iterar sobre os resultados
+        // Iterar sobre os resultados
         for (Object[] result : vendedoresQualificados) {
             Integer vendedorId = (Integer) result[0];
             String vendedorNome = (String) result[1];
@@ -302,7 +295,7 @@ public class VendaService {
                     comissaoReajustada
             ));
 
-            // 3. Se não for simulação, atualizar o valor de comissão no banco de dados
+            // Se não for simulação, atualizar o valor de comissão no banco de dados
             if (!dto.isSimulacao()) {
                 List<VendaModel> vendasDoVendedor = vendaRepository.findVendasByVendedorIdAndPeriodo(
                         vendedorId, dto.getDataInicio(), dto.getDataFim());
@@ -311,7 +304,7 @@ public class VendaService {
                     Double comissaoOriginal = venda.getValorComissao();
                     Double novaComissao = comissaoOriginal * (1 + dto.getPercentualReajuste() / 100.0);
                     venda.setValorComissao(novaComissao);
-                    vendaRepository.save(venda); // Salva cada venda individualmente
+                    vendaRepository.save(venda);
                 });
             }
         }

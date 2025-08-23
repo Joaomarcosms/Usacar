@@ -2,8 +2,8 @@ package br.com.usacar.vendas.rest.controller;
 
 import br.com.usacar.vendas.exception.BusinessRuleException;
 import br.com.usacar.vendas.exception.ObjectNotFoundException;
-import br.com.usacar.vendas.rest.dto.VendedorCadastroDTO; // DTO de entrada
-import br.com.usacar.vendas.rest.dto.VendedorResponseDTO; // DTO de saída
+import br.com.usacar.vendas.rest.dto.VendedorCadastroDTO;
+import br.com.usacar.vendas.rest.dto.VendedorResponseDTO;
 import br.com.usacar.vendas.service.VendedorService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

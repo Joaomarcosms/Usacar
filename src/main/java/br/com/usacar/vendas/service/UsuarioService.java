@@ -53,7 +53,7 @@ public class UsuarioService {
         // Salva no banco de dados
         UsuarioModel usuarioSalvo = usuarioRepository.save(novoUsuario);
 
-        // Regra 5: Retorna o DTO de resposta, sem a senha
+        // Retorna o DTO de resposta, sem a senha
         UsuarioResponseDTO responseDTO = modelMapper.map(usuarioSalvo, UsuarioResponseDTO.class);
         responseDTO.setPerfil(usuarioSalvo.getPerfil().getNome());
 
@@ -62,16 +62,16 @@ public class UsuarioService {
 
     @Transactional(readOnly = true)
     public UsuarioResponseDTO autenticar(LoginRequestDTO dto) {
-        // 1. Encontrar o usuário pelo e-mail
+        // Encontrar o usuário pelo e-mail
         UsuarioModel usuario = usuarioRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new BusinessRuleException("E-mail ou senha inválidos."));
 
-        // 2. Verificar se a senha fornecida corresponde à senha criptografada no banco
+        // Verificar se a senha fornecida corresponde à senha criptografada no banco
         if (!passwordEncoder.matches(dto.getSenha(), usuario.getSenha())) {
             throw new BusinessRuleException("E-mail ou senha inválidos.");
         }
 
-        // 3. Se a senha estiver correta, mapeia a entidade para o DTO de resposta
+        // Se a senha estiver correta, mapeia a entidade para o DTO de resposta
         UsuarioResponseDTO responseDTO = modelMapper.map(usuario, UsuarioResponseDTO.class);
         responseDTO.setPerfil(usuario.getPerfil().getNome()); // Define o nome do perfil
 

@@ -136,7 +136,7 @@ public class VendedorService {
         }
 
         VendedorModel vendedorAtualizado = vendedorRepository.save(vendedorExistente);
-        return modelMapper.map(vendedorAtualizado, VendedorResponseDTO.class); // Retorna VendedorResponseDTO
+        return modelMapper.map(vendedorAtualizado, VendedorResponseDTO.class);
     }
 
     /**

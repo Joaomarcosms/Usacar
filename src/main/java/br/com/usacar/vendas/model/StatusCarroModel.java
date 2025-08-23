@@ -21,19 +21,10 @@ public class StatusCarroModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-
     @Column(name = "descricao", length = 128, nullable = false)
     @NotNull(message = "O campo é obrigatório")
     @NotBlank(message = "O campo não pode está vazio")
     private String descricao;
-
-    /*
-    @ManyToOne
-    @JoinColumn(name = "status_id")
-    private StatusCarroModel status;
-
-     */
-
 
     //Conversão de Model para DTO
     public StatusCarroDTO toDTO(){

@@ -46,7 +46,6 @@ public class CarroEstoqueDTO {
         this.precoCompra = precoCompra;
         this.cor = cor;
         this.status = status;
-        // Você pode deixar dataCadastro como null, ou passar por outro construtor se quiser
         this.dataCadastro = null;
         this.id = null;
     }

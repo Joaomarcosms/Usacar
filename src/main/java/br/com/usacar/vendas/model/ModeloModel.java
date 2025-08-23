@@ -30,14 +30,6 @@ public class ModeloModel {
     @JoinColumn(name = "marca_id", insertable = false, updatable = false)
     private MarcaModel marca;
 
-
-    /*
-    @Column(name = "marcaId")
-    @NotNull(message = "O campo é obrigatório")
-    private int marcaId;
-
-     */
-
     //Conversão de Model para DTO
     public ModeloDTO toDTO() {
         ModeloDTO dto = new ModeloDTO();
