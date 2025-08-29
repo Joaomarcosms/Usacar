@@ -25,15 +25,16 @@ public class VendaController {
 
     //Consultar dados por ID
     @GetMapping("/{id}")
-    public ResponseEntity<VendaDTO> obter(@PathVariable int id) {
-        VendaDTO vendaDTO = vendaService.obterPorId(id);
+    public ResponseEntity<VendaResponseDTO> obter(@PathVariable int id) {
+        VendaResponseDTO vendaDTO = vendaService.obterPorId(id);
         return ResponseEntity.status(HttpStatus.OK).body(vendaDTO);
     }
 
+
     //Obtem todos os dados cadastrados
     @GetMapping
-    public ResponseEntity<List<VendaDTO>> obterTodas() {
-        List<VendaDTO> vendaDTOList = vendaService.obterTodas();
+    public ResponseEntity<List<VendaResponseDTO>> obterTodas() {
+        List<VendaResponseDTO> vendaDTOList = vendaService.obterTodas();
         return ResponseEntity.ok().body(vendaDTOList);
     }
 

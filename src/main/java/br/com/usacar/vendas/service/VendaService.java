@@ -3,8 +3,8 @@ package br.com.usacar.vendas.service;
 import br.com.usacar.vendas.exception.*;
 import br.com.usacar.vendas.model.*;
 import br.com.usacar.vendas.repository.*;
-
 import br.com.usacar.vendas.rest.dto.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,9 +33,11 @@ public class VendaService {
     @Autowired
     private StatusCarroRepository statusCarroRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
 
-    /*
-    Método que converte DTO para entidade VendaModel
+    /**
+     * Converte um VendaDTO (com IDs) para a entidade VendaModel.
      */
     public VendaModel converterParaEntidade(VendaDTO dto) {
         CarroModel carro = carroRepository.findById(dto.getCarroId())
@@ -56,140 +58,91 @@ public class VendaService {
                 .build();
     }
 
-
+    /**
+     * Busca uma única venda pelo ID e retorna os dados completos.
+     */
     @Transactional(readOnly = true)
-    public VendaDTO obterPorId(int id){
-        VendaModel venda = vendaRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Venda com " + id + " não encontrada"));
-        return venda.toDTO();
+    public VendaResponseDTO obterPorId(int id) {
+        VendaModel venda = vendaRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Venda com " + id + " não encontrada"));
+        return converterParaResponseDTO(venda);
     }
-
-    /*
-     *Aqui irá obter a lista de todas as vendas em sistema.
-     * @Return irá retornar a lista dos vendas em sistema.
-     */
-
-    @Transactional(readOnly = true)
-    public List<VendaDTO> obterTodas(){
-        List<VendaModel> vendas = vendaRepository.findAll();
-        return vendas.stream().map(venda -> venda.toDTO()).collect(Collectors.toList());
-    }
-
-    public List<VendaRelatorioDTO> gerarRelatorioComissao(LocalDate dataInicio, LocalDate dataFim) {
-        if (dataFim == null) {
-            dataFim = LocalDate.now();
-        }
-
-        return vendaRepository.gerarRelatorioVendasPorVendedor(dataInicio, dataFim);
-    }
-
-
-    /*
-     *Irá salvar o todas as vendas na base de dados
-     */
-
-    @Transactional
-    public VendaDTO salvar(VendaModel novaVenda) {
-        try {
-            if (novaVenda.getId() != null && novaVenda.getId().equals(0)) {
-                novaVenda.setId(null);
-            }
-
-            if (novaVenda.getId() != null && vendaRepository.existsById(novaVenda.getId())) {
-                throw new ConstraintException("Já existe uma venda com esse ID " + novaVenda.getId());
-            }
-
-            novaVenda.setStatusVenda("FINALIZADA");
-
-            // Salva a venda
-            VendaModel vendaSalva = vendaRepository.save(novaVenda);
-
-            // Busca o carro vendido
-            CarroModel carro = carroRepository.findById(novaVenda.getCarro().getId())
-                    .orElseThrow(() -> new ObjectNotFoundException("Carro não encontrado com ID " + novaVenda.getCarro().getId()));
-
-            // Busca o status "Vendido"
-            StatusCarroModel statusVendido = statusCarroRepository.findByDescricaoIgnoreCase("Vendido")
-                    .orElseThrow(() -> new ObjectNotFoundException("Status 'Vendido' não encontrado."));
-
-            // Atualiza o status do carro
-            carro.setStatus(statusVendido);
-            carroRepository.save(carro);
-
-            return vendaSalva.toDTO();
-
-        } catch (DataIntegrityException e){
-            throw new DataIntegrityException("Erro!! Não foi possivel salvar a venda " + novaVenda.getId());
-        } catch (ConstraintException e){
-            if (e.getMessage() == null || e.getMessage().isBlank()){
-                throw new ConstraintException("Erro de Restrição de integridade ao salvar a venda " + novaVenda.getId());
-            }
-            throw e;
-        } catch (BusinessRuleException e){
-            throw new BusinessRuleException("Erro!! Não foi possível salvar a venda" + novaVenda.getId() );
-        } catch (SQLException e){ // SQLException deve ser evitada na camada de serviço, use exceções Spring Data
-            throw new SQLException("Erro!! Não foi possível salvar a venda " + novaVenda.getId());
-        }
-    }
-
-    /*
-     *Irá atualizar uma venda na base de dadas
-     */
-
-    @Transactional
-    public VendaDTO atualizar(VendaModel vendaExistente){
-        try {
-            if(!vendaRepository.existsById(vendaExistente.getId())){
-                throw new ConstraintException("A venda solicitada " + vendaExistente.getId() + " não existe na base de dados");
-            }
-
-            return vendaRepository.save(vendaExistente).toDTO();
-        } catch (DataIntegrityException e) {
-            throw new DataIntegrityException("Erro!! Não foi possível atualizar os dados da venda " + vendaExistente.getId());
-        } catch (ConstraintException e) {
-            //Relança a mensagem original ou adiciona contexto
-            if (e.getMessage() == null || e.getMessage().isBlank()){
-                throw new ConstraintException("Erro ao atualizar os dados da venda " + vendaExistente.getId());
-            }
-            throw e;
-        }catch (BusinessRuleException e){
-            throw new BusinessRuleException("Erro!! Não foi possível atualizar os dados da venda " + vendaExistente.getId() + "Retrição de regra de negócio!");
-        } catch (SQLException e){ // SQLException deve ser evitada na camada de serviço, use exceções Spring Data
-            throw new SQLException("Erro!! Não foi possível atualizar os dados da venda " + vendaExistente.getId() +  "Falha na conexão com o banco de dados");
-        } catch (ObjectNotFoundException e){
-            throw new ObjectNotFoundException("Erro!! Não foi possível atualizar os dados da venda" + vendaExistente.getId() +  "Não encontrado no banco de dados!");
-        }
-    }
-
 
     /**
-     * NOVO: Método para cancelar uma venda e reverter o status do carro.
+     * Busca todas as vendas e retorna uma lista com os dados completos de cada uma.
+     */
+    @Transactional(readOnly = true)
+    public List<VendaResponseDTO> obterTodas() {
+        List<VendaModel> vendas = vendaRepository.findAll();
+        return vendas.stream()
+                .map(this::converterParaResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Salva uma nova venda na base de dados.
+     */
+    @Transactional
+    public VendaDTO salvar(VendaModel novaVenda) {
+        if (novaVenda.getId() != null && novaVenda.getId().equals(0)) {
+            novaVenda.setId(null);
+        }
+
+        if (novaVenda.getId() != null && vendaRepository.existsById(novaVenda.getId())) {
+            throw new ConstraintException("Já existe uma venda com esse ID " + novaVenda.getId());
+        }
+
+        novaVenda.setStatusVenda("FINALIZADA");
+
+        VendaModel vendaSalva = vendaRepository.save(novaVenda);
+
+        CarroModel carro = carroRepository.findById(novaVenda.getCarro().getId())
+                .orElseThrow(() -> new ObjectNotFoundException("Carro não encontrado com ID " + novaVenda.getCarro().getId()));
+
+        StatusCarroModel statusVendido = statusCarroRepository.findByDescricaoIgnoreCase("Vendido")
+                .orElseThrow(() -> new ObjectNotFoundException("Status 'Vendido' não encontrado."));
+
+        carro.setStatus(statusVendido);
+        carroRepository.save(carro);
+
+        return vendaSalva.toDTO();
+    }
+
+    /**
+     * Atualiza uma venda existente na base de dados.
+     */
+    @Transactional
+    public VendaDTO atualizar(VendaModel vendaExistente) {
+        if (!vendaRepository.existsById(vendaExistente.getId())) {
+            throw new ConstraintException("A venda solicitada " + vendaExistente.getId() + " não existe na base de dados");
+        }
+        return vendaRepository.save(vendaExistente).toDTO();
+    }
+
+    /**
+     * Cancela uma venda e reverte o status do carro.
      */
     @Transactional
     public VendaCancelamentoResponseDTO cancelarVenda(Integer vendaId) {
-        // Encontrar a venda
         VendaModel venda = vendaRepository.findById(vendaId)
                 .orElseThrow(() -> new ObjectNotFoundException("Venda com ID " + vendaId + " não encontrada."));
 
-        // Venda só pode ser cancelada em até 7 dias
         long diasDesdeVenda = ChronoUnit.DAYS.between(venda.getDataVenda(), LocalDate.now());
         if (diasDesdeVenda > 7) {
             throw new BusinessRuleException("A venda só pode ser cancelada até 7 dias após a data da venda.");
         }
 
-        // Encontrar o carro
         CarroModel carro = venda.getCarro();
         if (carro == null) {
             throw new BusinessRuleException("Carro associado à venda não encontrado.");
         }
 
-        // Reverter o status do carro para "Disponível"
         StatusCarroModel statusDisponivel = statusCarroRepository.findByDescricaoIgnoreCase("Disponível")
                 .orElseThrow(() -> new ObjectNotFoundException("Status 'Disponível' não encontrado."));
 
         carro.setStatus(statusDisponivel);
         carroRepository.save(carro);
 
-        // Deletar a venda
         vendaRepository.delete(venda);
 
         return new VendaCancelamentoResponseDTO(
@@ -199,35 +152,19 @@ public class VendaService {
         );
     }
 
-    /*
-     *Deletar uma venda da base de dados
+    /**
+     * Deleta uma venda da base de dados.
      */
-
     @Transactional
-    public void deletar(Integer id){
-        try {
-            if(!vendaRepository.existsById(id)){
-                throw new ConstraintException("Venda inexistente na base de dados com o ID: " + id);
-            }
-
-            vendaRepository.deleteById(id);
-        } catch (DataIntegrityException e){
-            throw new DataIntegrityException("Erro!! Não foi possível deletar a venda " + id);
-        } catch (ConstraintException e){
-            if (e.getMessage() == null || e.getMessage().isBlank()){
-                throw new ConstraintException("Erro!! Não foi possível deletar a venda " + id + "Restrição de integridade de dados");
-            }
-            throw e;
-        } catch (BusinessRuleException e){
-            throw new BusinessRuleException("Erro! Não foi possível deletar a venda " + id + "Violação da regra de negócio!");
-        } catch (SQLException e){
-            throw new SQLException("Erro! Não foi possível  deletar a venda " + id + "Falha na conexão com o banco de dados");
-        } catch (ObjectNotFoundException e){
-            throw  new ObjectNotFoundException("Erro! Não foi possível deletar a venda " + id + "Não encontrado no banco de dados!");
+    public void deletar(Integer id) {
+        if (!vendaRepository.existsById(id)) {
+            throw new ConstraintException("Venda inexistente na base de dados com o ID: " + id);
         }
+        vendaRepository.deleteById(id);
     }
 
-    //Gera relatorio de Venda de inicio e fim
+    // --- MÉTODOS DE RELATÓRIO E OUTROS ---
+
     @Transactional(readOnly = true)
     public List<VendaRelatorioDTO> gerarRelatorioComissoes(LocalDate dataInicio, LocalDate dataFim) {
         if (dataFim == null) {
@@ -245,24 +182,17 @@ public class VendaService {
 
         return vendas.stream().map(venda -> {
             CarroModel carro = venda.getCarro();
-
-            // Acessando diretamente os objetos Modelo e Cor do CarroModel
-            String nomeModelo = (carro.getModelo() != null) ? carro.getModelo().getNome() : "Modelo não encontrado";
-            String nomeMarca = (carro.getModelo() != null && carro.getModelo().getMarca() != null) ? carro.getModelo().getMarca().getNome() : "Marca não encontrada";
-
-            String nomeCor = (carro.getCor() != null) ? carro.getCor().getNome() : "Cor não encontrada";
+            String nomeModelo = (carro.getModelo() != null) ? carro.getModelo().getNome() : "N/A";
+            String nomeMarca = (carro.getModelo() != null && carro.getModelo().getMarca() != null) ? carro.getModelo().getMarca().getNome() : "N/A";
+            String nomeCor = (carro.getCor() != null) ? carro.getCor().getNome() : "N/A";
 
             return new VendaHistoricoDTO(
                     venda.getDataVenda(),
                     venda.getValorVenda(),
                     venda.getValorComissao(),
                     new VendaHistoricoDTO.CarroDTO(
-                            nomeMarca,
-                            nomeModelo,
-                            carro.getAnoFabricacao(),
-                            carro.getAnoModelo(),
-                            carro.getPlaca(),
-                            nomeCor
+                            nomeMarca, nomeModelo, carro.getAnoFabricacao(),
+                            carro.getAnoModelo(), carro.getPlaca(), nomeCor
                     ),
                     venda.getVendedor().getNome()
             );
@@ -272,37 +202,25 @@ public class VendaService {
     @Transactional
     public List<ComissaoReajusteResponseDTO> reajustarComissao(ComissaoReajusteDTO dto) {
         List<ComissaoReajusteResponseDTO> resultados = new ArrayList<>();
-
-        // Obter os vendedores para o reajuste
         List<Object[]> vendedoresQualificados = vendaRepository.findVendasTotaisParaReajuste(
                 dto.getDataInicio(), dto.getDataFim(), dto.getValorMinimoTotalVendas());
 
-        // Iterar sobre os resultados
         for (Object[] result : vendedoresQualificados) {
             Integer vendedorId = (Integer) result[0];
             String vendedorNome = (String) result[1];
             Double valorTotalVendas = (Double) result[2];
             Double comissaoAnterior = (Double) result[3];
-
-            // Calcular a nova comissão total
             Double comissaoReajustada = comissaoAnterior * (1 + dto.getPercentualReajuste() / 100.0);
 
-            // Adicionar ao DTO de resposta
             resultados.add(new ComissaoReajusteResponseDTO(
-                    vendedorNome,
-                    valorTotalVendas,
-                    comissaoAnterior,
-                    comissaoReajustada
+                    vendedorNome, valorTotalVendas, comissaoAnterior, comissaoReajustada
             ));
 
-            // Se não for simulação, atualizar o valor de comissão no banco de dados
             if (!dto.isSimulacao()) {
                 List<VendaModel> vendasDoVendedor = vendaRepository.findVendasByVendedorIdAndPeriodo(
                         vendedorId, dto.getDataInicio(), dto.getDataFim());
-
                 vendasDoVendedor.forEach(venda -> {
-                    Double comissaoOriginal = venda.getValorComissao();
-                    Double novaComissao = comissaoOriginal * (1 + dto.getPercentualReajuste() / 100.0);
+                    Double novaComissao = venda.getValorComissao() * (1 + dto.getPercentualReajuste() / 100.0);
                     venda.setValorComissao(novaComissao);
                     vendaRepository.save(venda);
                 });
@@ -314,5 +232,22 @@ public class VendaService {
     @Transactional(readOnly = true)
     public List<MarcaRankingDTO> obterRankingMarcasMaisVendidas(LocalDate dataInicio, LocalDate dataFim) {
         return vendaRepository.gerarRankingMarcasMaisVendidas(dataInicio, dataFim);
+    }
+
+    /**
+     * Método auxiliar privado para converter VendaModel para VendaResponseDTO.
+     */
+    private VendaResponseDTO converterParaResponseDTO(VendaModel venda) {
+        VendaResponseDTO dto = modelMapper.map(venda, VendaResponseDTO.class);
+        if (venda.getCarro() != null) {
+            dto.setCarro(modelMapper.map(venda.getCarro(), CarroDTO.class));
+        }
+        if (venda.getCliente() != null) {
+            dto.setCliente(modelMapper.map(venda.getCliente(), ClienteDTO.class));
+        }
+        if (venda.getVendedor() != null) {
+            dto.setVendedor(modelMapper.map(venda.getVendedor(), VendedorResponseDTO.class));
+        }
+        return dto;
     }
 }
