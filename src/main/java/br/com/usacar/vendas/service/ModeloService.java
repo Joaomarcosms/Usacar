@@ -36,8 +36,8 @@ public class ModeloService {
 
     @Transactional
     public List<ModeloDTO> obterTodos() {
-        List<ModeloModel> modelos = modeloRepository.findAll();
-        return modelos.stream().map(modelo -> modelo.toDTO()).collect(Collectors.toList());
+        List<ModeloModel> modelos = modeloRepository.findAllWithMarca();
+        return modelos.stream().map(ModeloModel::toDTO).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -53,14 +53,17 @@ public class ModeloService {
     @Transactional
     public ModeloDTO salvar(ModeloDTO novoModeloDTO) {
         try {
-            Optional<MarcaModel> marca = marcaRepository.findById(novoModeloDTO.getMarca().getId());
-            if (marca.isEmpty()) {
-                throw new ObjectNotFoundException("Marca com ID " + novoModeloDTO.getMarca().getId() + " não encontrada");
+            if (novoModeloDTO.getMarca() == null || novoModeloDTO.getMarca().getId() == 0) {
+                throw new BusinessRuleException("É necessário selecionar uma marca para o modelo.");
             }
+
+            MarcaModel marca = marcaRepository.findById(novoModeloDTO.getMarca().getId())
+                    .orElseThrow(() -> new ObjectNotFoundException("Marca com ID " + novoModeloDTO.getMarca().getId() + " não encontrada"));
+
 
             ModeloModel modelo = new ModeloModel();
             modelo.setNome(novoModeloDTO.getNome());
-            modelo.setMarca(marca.get());
+            modelo.setMarca(marca);
 
             return modeloRepository.save(modelo).toDTO();
 

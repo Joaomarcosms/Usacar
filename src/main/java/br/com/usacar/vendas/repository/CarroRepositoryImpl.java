@@ -5,8 +5,10 @@ import br.com.usacar.vendas.rest.dto.CarroFiltroDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import lombok.Data;
 
 import java.util.List;
+
 
 public class CarroRepositoryImpl implements CarroRepositoryCustom {
 

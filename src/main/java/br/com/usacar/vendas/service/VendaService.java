@@ -199,6 +199,16 @@ public class VendaService {
         }).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<VendaHistoricoDTO> obterHistoricoVendasPorCpf(String cpf) {
+        // 1. Encontra o cliente pelo CPF
+        ClienteModel cliente = clienteRepository.findByCpf(cpf)
+                .orElseThrow(() -> new ObjectNotFoundException("Cliente com CPF " + cpf + " não encontrado."));
+
+        // 2. Reutiliza o método existente para buscar o histórico pelo ID do cliente encontrado
+        return obterHistoricoVendasPorCliente(cliente.getId());
+    }
+
     @Transactional
     public List<ComissaoReajusteResponseDTO> reajustarComissao(ComissaoReajusteDTO dto) {
         List<ComissaoReajusteResponseDTO> resultados = new ArrayList<>();

@@ -26,8 +26,8 @@ public class ModeloModel {
     @NotBlank(message = "O campo não pode está vazio")
     private String nome;
 
-    @ManyToOne
-    @JoinColumn(name = "marca_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "marca_id")
     private MarcaModel marca;
 
     //Conversão de Model para DTO

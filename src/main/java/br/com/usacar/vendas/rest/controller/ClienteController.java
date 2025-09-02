@@ -46,6 +46,12 @@ public class ClienteController {
         return ResponseEntity.ok(clienteDTO);
     }
 
+    @GetMapping("/cpf/{cpf}/historico-vendas")
+    public ResponseEntity<List<VendaHistoricoDTO>> obterHistoricoVendasPorCpf(@PathVariable String cpf) {
+        List<VendaHistoricoDTO> historico = vendaService.obterHistoricoVendasPorCpf(cpf);
+        return ResponseEntity.ok(historico);
+    }
+
 
     @GetMapping("/{id}/historico-vendas")
     public ResponseEntity<List<VendaHistoricoDTO>> obterHistoricoVendas(@PathVariable Integer id) {
