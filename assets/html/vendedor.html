@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>USACAR - Cadastro de Vendedor</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <nav class="tabs">
+                <a class="btn btn-primary glow-button" href="index.html">🏠 Início</a>
+            </nav>
+            <div class="header-content">
+                <h1 class="main-title">Cadastro de Vendedores</h1>
+                <p class="subtitle">Sistema de Gerenciamento de Vendedores</p>
+                <div class="divider"></div>
+            </div>
+        </header>
+
+        <div class="form-card glass-card">
+            <div class="card-header">
+                <h2 class="card-title">Cadastro de Vendedor</h2>
+            </div>
+            <div class="card-content">
+                <form id="vendedorForm">
+                    <input type="hidden" id="id" />
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nome">Nome</label>
+                            <input type="text" id="nome" placeholder="Nome completo" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cpf">CPF</label>
+                            <input type="text" id="cpf" placeholder="00000000000" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" placeholder="exemplo@usacar.com" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="telefone">Telefone</label>
+                            <input type="text" id="telefone" placeholder="11999990000" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dataAdmissao">Data de Admissão</label>
+                            <input type="date" id="dataAdmissao" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dataDemissao">Data de Demissão</label>
+                            <input type="date" id="dataDemissao" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="senha">Senha</label>
+                            <p>Crie senha c/ 8+ caracteres, 1 nº e 1 símbolo.</p>
+                            <input type="password" id="senha" placeholder="Senha de acesso" required />
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary glow-button">💾 Salvar</button>
+                        <button type="button" class="btn btn-secondary glow-button" onclick="carregarVendedores()">🔍
+                            Buscar</button>
+                        <button type="button" class="btn btn-outline glow-button" onclick="limparFormulario()">🔄
+                            Limpar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-card glass-card">
+            <div class="card-header">
+                <div class="table-header">
+                    <h2 class="card-title">Vendedores Cadastrados</h2>
+                    <div class="badge" id="vendedorCount">0 vendedores</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="table-wrapper">
+                    <table id="vendedoresTable">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>CPF</th>
+                                <th>Email</th>
+                                <th>Telefone</th>
+                                <th>Admissão</th>
+                                <th>Demissão</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Preenchido por JavaScript -->
+                        </tbody>
+                    </table>
+
+                    <div id="emptyState" class="empty-state">
+                        <div class="empty-icon">🧑‍💼</div>
+                        <h3>Nenhum vendedor encontrado</h3>
+                        <p>Cadastre o primeiro vendedor para começar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação -->
+    <div id="modalConfirmacao" class="confirmation-dialog hidden">
+        <h3>Confirmar exclusão</h3>
+        <p>Tem certeza que deseja excluir este vendedor?</p>
+        <div class="button-group">
+            <button id="confirmarExclusao" class="btn btn-danger glow-button">Sim, excluir</button>
+            <button id="cancelarExclusao" class="btn btn-outline glow-button">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="notification" class="notification hidden"></div>
+
+    <script src="../js/vendedor.js"></script>
+</body>
+
+</html>

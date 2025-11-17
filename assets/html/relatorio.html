@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>USACAR - Relatórios</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <nav class="tabs">
+                <a class="btn btn-primary glow-button" href="../html/index.html">🏠 Início</a>
+            </nav>
+            <div class="header-content">
+                <h1 class="main-title">Relatórios Gerenciais</h1>
+                <p class="subtitle">Análise de Vendas, Comissões e Desempenho</p>
+                <div class="divider"></div>
+            </div>
+        </header>
+
+        <!-- ========================================================== -->
+        <!-- NOVO: Seção do Relatório Detalhado de Vendas -->
+        <!-- ========================================================== -->
+        <div class="form-card glass-card">
+            <div class="card-header">
+                <h2 class="card-title">Relatório Detalhado de Vendas por Vendedor</h2>
+            </div>
+            <div class="card-content">
+                <form id="relatorioDetalhadoForm" class="form-grid">
+                    <div class="form-group">
+                        <label for="dataInicioDetalhado">Data de Início</label>
+                        <input type="date" id="dataInicioDetalhado" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="dataFimDetalhado">Data Final</label>
+                        <input type="date" id="dataFimDetalhado" required />
+                    </div>
+                    <div class="button-group" style="grid-column: 1 / -1;">
+                        <button type="submit" class="btn btn-primary glow-button">
+                            <span class="btn-icon">📊</span> Gerar Relatório Detalhado
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Área de Resultados do Relatório Detalhado -->
+        <div id="areaResultadosDetalhado" class="results-container">
+            <div id="loadingSpinnerDetalhado" class="spinner hidden"></div>
+            <div id="mensagemInfoDetalhado" class="info-message">
+            </div>
+            <div id="relatorioContainerDetalhado"></div>
+        </div>
+
+        <div class="divider my-8"></div>
+
+        <br />
+        <br />
+        <!-- ========================================================== -->
+        <!-- Seções existentes (Relatório de Comissão e Reajuste) -->
+        <!-- ========================================================== -->
+        <div class="form-card glass-card">
+            <div class="card-header">
+                <h2 class="card-title">Relatório de Totais de Comissão</h2>
+            </div>
+            <div class="card-content">
+                <form id="relatorioForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="dataInicioRelatorio">Data Início</label>
+                            <input type="date" id="dataInicioRelatorio" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="dataFimRelatorio">Data Fim</label>
+                            <input type="date" id="dataFimRelatorio" />
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary glow-button">📄 Gerar Relatório de Comissão</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="table-card glass-card">
+            <div class="card-header">
+                <h2 class="card-title">Resultado do Relatório de Comissão</h2>
+            </div>
+            <div class="card-content">
+                <div class="table-wrapper">
+                    <table id="relatorioTable">
+                        <thead>
+                            <tr>
+                                <th>Vendedor</th>
+                                <th>Quantidade de Vendas</th>
+                                <th>Valor Total Vendido</th>
+                                <th>Comissão Recebida</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider my-8"></div>
+        
+        <br />
+        <br />
+        <div class="form-card glass-card mt-8">
+            <div class="card-header">
+                <h2 class="card-title">Reajuste de Comissão</h2>
+            </div>
+            <div class="card-content">
+                <form id="reajusteComissaoForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="dataInicioReajuste">Data de Início</label>
+                            <input type="date" id="dataInicioReajuste" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="dataFimReajuste">Data de Fim</label>
+                            <input type="date" id="dataFimReajuste" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="valorMinimo">Valor Mínimo de Vendas</label>
+                            <input type="number" id="valorMinimo" step="0.01" value="0.0" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="percentual">Percentual de Reajuste (%)</label>
+                            <input type="number" id="percentual" step="0.01" value="0.0" required />
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button type="button" id="simularBtn" class="btn btn-secondary glow-button">
+                            <span class="btn-icon">🔍</span> Simular
+                        </button>
+                        <button type="button" id="confirmarBtn" class="btn btn-primary glow-button">
+                            <span class="btn-icon">✅</span> Confirmar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="resultadosReajuste" class="table-card glass-card hidden">
+            <div class="card-header">
+                <h2 class="card-title" id="resultadoTitulo">Resultados</h2>
+            </div>
+            <div class="card-content">
+                <div class="table-wrapper">
+                    <table id="reajusteTable">
+                        <thead>
+                            <tr>
+                                <th>Vendedor</th>
+                                <th>Valor Total de Vendas</th>
+                                <th>Comissão Anterior</th>
+                                <th>Comissão Reajustada</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="notification" class="notification hidden"></div>
+
+    <script src="../js/relatorio.js"></script>
+</body>
+
+</html>

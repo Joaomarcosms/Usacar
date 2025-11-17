@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Histórico de Vendas do Cliente</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <nav class="tabs">
+                <a class="btn btn-primary glow-button" href="../html/index.html">🏠 Início</a>
+            </nav>
+            <div class="header-content">
+                <h1 class="main-title">Histórico de Vendas por Cliente</h1>
+                <p class="subtitle">Consulte o histórico de compras de um cliente específico</p>
+                <div class="divider"></div>
+            </div>
+        </header>
+
+        <div class="form-card glass-card">
+            <div class="card-header">
+                <h2 class="card-title">Buscar Histórico por CPF</h2>
+            </div>
+            <div class="card-content">
+                <form id="historicoForm">
+                    <div class="form-grid" style="max-width: 400px; margin: auto;">
+                        <div class="form-group">
+                            <label for="clienteCpf">CPF do Cliente</label>
+                            <input type="text" id="clienteCpf" required placeholder="Digite o CPF do cliente"
+                                maxlength="14" oninput="mascaraCpf(this)" />
+                        </div>
+                    </div>
+                    <div class="button-group" style="justify-content: center; margin-top: 1rem;">
+                        <button type="submit" class="btn btn-primary glow-button">🔍 Buscar Histórico</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-card glass-card" style="max-width: 1000px; margin: auto;">
+            <div class="card-header">
+                <h2 class="card-title">Resultado da Busca</h2>
+            </div>
+            <div class="card-content">
+                <div class="table-wrapper">
+                    <table id="historicoTable">
+                        <thead>
+                            <tr>
+                                <th>Data da Venda</th>
+                                <th>Valor da Venda</th>
+                                <th>Comissão</th>
+                                <th>Marca</th>
+                                <th>Modelo</th>
+                                <th>Ano Fab.</th>
+                                <th>Ano Mod.</th>
+                                <th>Placa</th>
+                                <th>Cor</th>
+                                <th>Vendedor</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification hidden"></div>
+
+    <script src="../js/historico-cliente.js"></script>
+</body>
+
+</html>

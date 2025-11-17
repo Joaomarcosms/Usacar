@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>USACAR - Página Inicial</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+  <style>
+    body {
+      display: flex;
+      font-family: 'Inter', sans-serif;
+      background-image: url('../img/usarcar5.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-attachment: fixed;
+      overflow-x: hidden;
+    }
+
+    body.hidden-until-auth {
+      display: none;
+    }
+
+    .sidebar {
+      width: 260px;
+      background-color: #1e1e2f;
+      color: white;
+      height: 100vh;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      position: fixed;
+      left: 0;
+      top: 0;
+      overflow-y: auto;
+      transition: transform 0.3s ease-in-out;
+      z-index: 100;
+    }
+
+    .sidebar.hidden {
+      transform: translateX(-100%);
+    }
+
+    .sidebar h2 {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      color: #00d4ff;
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+      font-weight: 500;
+      font-family: 'Serif', 'Georgia';
+    }
+
+    .sidebar a:hover {
+      background-color: #2f2f4f;
+    }
+
+    .content {
+      margin-left: 260px;
+      padding: 2rem;
+      flex: 1;
+      transition: margin-left 0.3s ease-in-out;
+    }
+
+    .content.expanded {
+      margin-left: 0;
+    }
+
+    .menu-toggle {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      width: 40px;
+      height: 40px;
+      background-color: #1e1e2f;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .top-bar {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    #welcome-message {
+      color: white;
+      font-weight: 500;
+      background-color: rgba(30, 30, 47, 0.7);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+    }
+
+    #logout-btn {
+      padding: 0.5rem 1rem;
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      transition: background-color 0.3s ease;
+    }
+
+    #logout-btn:hover {
+      background-color: #cc0000;
+    }
+
+    .confirmation-dialog {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1e1e2f;
+      color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      text-align: center;
+    }
+
+    .confirmation-dialog.hidden {
+      display: none;
+    }
+
+    .confirmation-dialog h3 {
+      margin-top: 0;
+      color: #00d4ff;
+    }
+
+    .confirmation-dialog .button-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+
+
+<body class="hidden-until-auth">
+  <button id="menu-toggle-btn" class="menu-toggle">☰</button>
+
+  <div class="top-bar">
+    <div id="welcome-message"></div>
+    <button id="logout-btn">Sair</button>
+  </div>
+
+  <nav id="sidebar" class="sidebar">
+    <h2>📁 Menu</h2>
+    <a href="../html/cliente.html">Cadastrar Cliente</a>
+    <a href="../html/vendedor.html">Cadastrar Vendedor</a>
+    <a href="../html/carro.html">Cadastrar Carro</a>
+    <a href="venda.html">Cadastrar Venda</a>
+    <a href="../html/modelo.html">Cadastrar Modelo</a>
+    <a href="../html/marca.html">Cadastrar Marca</a>
+    <a href="../html/cor.html">Cadastrar Cor</a>
+    <a href="../html/status.html">Cadastrar Status</a>
+    <a href="../html/relatorio.html">Relatório de Vendas</a>
+    <a href="../html/estoque.html">Estoque De Carros</a>
+    <a href="../html/ranking.html">Ranking de Vendas</a>
+    <a href="../html/historico-cliente.html">Histórico de Vendas do Cliente</a>
+  </nav>
+
+  <div id="main-content" class="content">
+    <header>
+      <h1 class="main-title">USACAR</h1>
+      <h1>Bem-vindo ao sistema USACAR!</h1>
+      <div class="divider"></div>
+    </header>
+    <section>
+      <h2>Gerencie seu negócio de forma eficiente</h2>
+    </section>
+  </div>
+
+  <div id="confirmLogoutModal" class="confirmation-dialog hidden">
+    <h3>Confirmar Saída</h3>
+    <p>Deseja realmente sair do sistema?</p>
+    <div class="button-group">
+      <button id="confirmLogoutBtn" class="btn btn-danger">Sim, Sair</button>
+      <button id="cancelLogoutBtn" class="btn btn-outline">Cancelar</button>
+    </div>
+  </div>
+
+  <script>
+    // Função para configurar os eventos da página (menu, logout, etc.)
+    function setupPageEvents() {
+      const menuToggleBtn = document.getElementById('menu-toggle-btn');
+      const sidebar = document.getElementById('sidebar');
+      const mainContent = document.getElementById('main-content');
+      menuToggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('hidden');
+        mainContent.classList.toggle('expanded');
+      });
+
+      const logoutBtn = document.getElementById('logout-btn');
+      const confirmLogoutModal = document.getElementById('confirmLogoutModal');
+      const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+      const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+      logoutBtn.addEventListener('click', () => {
+        confirmLogoutModal.classList.remove('hidden');
+      });
+      cancelLogoutBtn.addEventListener('click', () => {
+        confirmLogoutModal.classList.add('hidden');
+      });
+      confirmLogoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('usuarioLogado');
+        window.location.href = 'login.html';
+      });
+    }
+
+    // Esta função é executada assim que o script é lido
+    (function checkAuth() {
+      const usuarioLogadoString = localStorage.getItem('usuarioLogado');
+
+      if (!usuarioLogadoString) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      try {
+        const usuario = JSON.parse(usuarioLogadoString);
+        if (usuario && usuario.nome) {
+          // Se o utilizador for válido, mostra a página e configura os eventos
+          document.body.classList.remove('hidden-until-auth');
+          document.getElementById('welcome-message').textContent = `Olá, ${usuario.nome}!`;
+          // Espera o resto do HTML carregar para vincular os eventos
+          document.addEventListener('DOMContentLoaded', setupPageEvents);
+        } else {
+          throw new Error("Dados do utilizador inválidos.");
+        }
+      } catch (error) {
+        console.error("Erro de autenticação:", error);
+        localStorage.removeItem('usuarioLogado');
+        window.location.href = 'login.html';
+      }
+    })();
+  </script>
+</body>
+
+</html>

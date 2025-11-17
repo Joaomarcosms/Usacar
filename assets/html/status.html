@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USACAR - Cadastro de Status</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9I4YyT+9D3WzN1/9Pj5xVlV1B5V1b5Z5G4vVwY5oY5i125iA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <nav class="tabs">
+                <a class="btn btn-primary glow-button" href="index.html">🏠 Início</a>
+            </nav>
+            <div class="header-content">
+                <h1 class="main-title">Cadastro de Status</h1>
+                <p class="subtitle">Gerenciamento de Status de Veículos</p>
+                <div class="divider"></div>
+            </div>
+        </header>
+
+        <!-- Formulário de Cadastro/Edição -->
+        <div class="form-card glass-card">
+            <div class="card-header">
+                <h2 class="card-title">Cadastrar/Editar Status</h2>
+            </div>
+            <div class="card-content">
+                <form id="statusForm">
+                    <input type="hidden" id="statusId">
+                    <div class="form-grid-single">
+                        <div class="form-group">
+                            <label for="descricao">Descrição do Status</label>
+                            <input type="text" id="descricao" placeholder="Ex: Disponível" required>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary glow-button">
+                            <span class="btn-icon">💾</span> Salvar
+                        </button>
+                        <button type="button" class="btn btn-outline glow-button" onclick="limparFormulario()">
+                            <span class="btn-icon">🔄</span> Limpar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabela de Status -->
+        <div class="table-card glass-card">
+            <div class="card-header">
+                <div class="table-header">
+                    <h2 class="card-title">Status Cadastrados</h2>
+                    <div class="badge" id="statusCount">0 status</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="table-wrapper">
+                    <table id="statusTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Descrição</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dados serão inseridos aqui pelo JavaScript -->
+                        </tbody>
+                    </table>
+                    <div id="emptyState" class="empty-state">
+                        <div class="empty-icon">🏷️</div>
+                        <h3>Nenhum status encontrado</h3>
+                        <p>Cadastre um novo status para começar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div id="confirmModal" class="confirmation-dialog hidden">
+        <h3>Confirmar exclusão</h3>
+        <p>Tem certeza que deseja excluir este status?</p>
+        <div class="button-group">
+            <button id="confirmYes" class="btn btn-danger glow-button">Confirmar</button>
+            <button id="confirmNo" class="btn btn-outline glow-button">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Toast de Notificação -->
+    <div id="notification" class="notification hidden"></div>
+
+    <script src="../js/status.js"></script>
+</body>
+
+</html>
