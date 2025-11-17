@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USACAR - Cadastro de Modelos</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9I4YyT+9D3WzN1/9Pj5xVlV1B5V1b5Z5G4vVwY5oY5i125iA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <nav class="tabs">
+                <a class="btn btn-primary glow-button" href="index.html">🏠 Início</a>
+            </nav>
+            <div class="header-content">
+                <h1 class="main-title">Cadastro de Modelos</h1>
+                <p class="subtitle">Gerenciamento de Modelos de Carros</p>
+                <div class="divider"></div>
+            </div>
+        </header>
+
+        <!-- Formulário de Cadastro/Edição de Modelo -->
+        <div class="form-card glass-card">
+            <div class="card-header">
+                <h2 class="card-title">Cadastro de Modelo</h2>
+            </div>
+            <div class="card-content">
+                <form id="modeloForm">
+                    <input type="hidden" id="modeloId">
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nome">Nome do Modelo</label>
+                            <input type="text" id="nome" placeholder="Ex: Corolla" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="marcaId">Marca</label>
+                            <select id="marcaId" required class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary glow-button">
+                            <span class="btn-icon">💾 Salvar</span>
+                        </button>
+                        <button type="button" class="btn btn-outline glow-button" onclick="limparFormulario()">
+                            <span class="btn-icon">🔄 Limpar</span> 
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabela de Modelos -->
+        <div class="table-card glass-card">
+            <div class="card-header">
+                <div class="table-header">
+                    <h2 class="card-title">Modelos Cadastrados</h2>
+                    <div class="badge" id="modeloCount">0 modelos</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="table-wrapper">
+                    <table id="modelosTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Marca</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dados serao inseridos aqui pelo JavaScript -->
+                        </tbody>
+                    </table>
+                    <div id="emptyState" class="empty-state">
+                        <div class="empty-icon">📂</div>
+                        <h3>Nenhum modelo encontrado</h3>
+                        <p>Cadastre um novo modelo para começar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div id="confirmModal" class="confirmation-dialog hidden">
+        <h3>Confirmar exclusão</h3>
+        <p id="confirmMessage">Tem certeza que deseja excluir este modelo?</p>
+        <div class="button-group">
+            <button id="confirmYes" class="btn btn-danger glow-button">Confirmar</button>
+            <button id="confirmNo" class="btn btn-outline glow-button">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Toast de Notificação -->
+    <div id="notification" class="notification hidden"></div>
+
+    <script src="../js/modelo.js"></script>
+</body>
+
+</html>

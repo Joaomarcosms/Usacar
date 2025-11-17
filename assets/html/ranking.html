@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>USACAR - Ranking de Marcas Mais Vendidas</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <nav class="tabs">
+                <a class="btn btn-primary glow-button" href="index.html">🏠 Início</a>
+            </nav>
+            <div class="header-content">
+                <h1 class="main-title">Marcas Mais Vendidas</h1>
+                <p class="subtitle">Visão estratégica das vendas por marca</p>
+                <div class="divider"></div>
+            </div>
+        </header>
+
+        <!-- Formulário de Filtro -->
+        <div class="form-card glass-card">
+            <div class="card-header">
+                <h2 class="card-title">Filtrar Ranking</h2>
+            </div>
+            <div class="card-content">
+                <form id="rankingFilterForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="dataInicio">Data Início:</label>
+                            <input type="date" id="dataInicio" />
+                        </div>
+                        <div class="form-group">
+                            <label for="dataFim">Data Fim:</label>
+                            <input type="date" id="dataFim" />
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary glow-button">
+                            <span class="btn-icon">📊</span> Gerar Ranking
+                        </button>
+                        <button type="button" class="btn btn-outline glow-button" onclick="limparFiltro()">
+                            <span class="btn-icon">🔄</span> Limpar Filtro
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Gráfico de Ranking -->
+        <div class="table-card glass-card" style="margin-bottom: 2rem;">
+            <div class="card-header">
+                <h2 class="card-title">Gráfico de Vendas por Marca</h2>
+            </div>
+            <div class="card-content">
+                <canvas id="rankingChart"></canvas>
+                <div id="chartEmptyState" class="empty-state hidden">
+                    <div class="empty-icon">📈</div>
+                    <h3>Nenhum dado para o gráfico</h3>
+                    <p>Ajuste os filtros ou cadastre mais vendas.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela de Ranking -->
+        <div class="table-card glass-card">
+            <div class="card-header">
+                <div class="table-header">
+                    <h2 class="card-title">Ranking Detalhado</h2>
+                    <div class="badge" id="rankingCount">0 Marcas</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="table-wrapper">
+                    <table id="rankingTable">
+                        <thead>
+                            <tr>
+                                <th>Marca</th>
+                                <th>Qtd. Vendida</th>
+                                <th>Valor Total</th>
+                                <th>Ticket Médio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dados do ranking serão inseridos aqui -->
+                        </tbody>
+                    </table>
+                    <div id="tableEmptyState" class="empty-state hidden">
+                        <div class="empty-icon">📋</div>
+                        <h3>Nenhum ranking encontrado</h3>
+                        <p>Ajuste os filtros ou cadastre mais vendas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de Notificação -->
+    <div id="notification" class="notification hidden"></div>
+
+    <script src="../js/ranking.js"></script>
+</body>
+
+</html>

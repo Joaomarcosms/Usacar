@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Estoque de Carros</title>
+    <link rel="stylesheet" href="../css/style.css" />
+</head>
+
+<body>
+    <header class="header">
+        <!-- Navigation Tabs -->
+        <br />
+        <nav class="tabs">
+            <a class="btn btn-primary glow-button" href="../html/index.html">🏠 Inicio</a>
+        </nav>
+        <div class="header-content">
+            <h1 class="main-title">Estoque De Carros</h1>
+            <p class="subtitle">Sistema de Gerenciamento de Estoque</p>
+            <div class="divider"></div>
+        </div>
+    </header>
+
+
+    <div class="form-card glass-card">
+        <div class="card-header">
+            <h2 class="card-title">Filtros</h2>
+        </div>
+        <div class="card-content">
+            <form id="filtroForm" onsubmit="filtrarEstoque(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="marca">Marca</label>
+                        <input type="text" id="marca" />
+                    </div>
+                    <div class="form-group">
+                        <label for="modelo">Modelo</label>
+                        <input type="text" id="modelo" />
+                    </div>
+                    <div class="form-group">
+                        <label for="ano">Ano</label>
+                        <input type="number" id="anoFabricacao" />
+                    </div>
+                    <div class="form-group">
+                        <label for="cor">Cor</label>
+                        <input type="text" id="cor" />
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary glow-button">🔍 Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="table-card glass-card">
+        <div class="card-header">
+            <h2 class="card-title">Carros Em Estoque</h2>
+        </div>
+        <div class="card-content">
+            <div class="table-wrapper">
+                <table id="estoqueTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Ano</th>
+                            <th>Cor</th>
+                            <th>KM</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/estoque.js"></script>
+</body>
+
+</html>

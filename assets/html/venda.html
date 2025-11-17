@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USACAR - Cadastro de Vendas</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9I4YyT+9D3WzN1/9Pj5xVlV1B5V1b5Z5G4vVwY5oY5i125iA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <!-- Navigation Tabs -->
+            <nav class="tabs">
+                <a class="btn btn-primary glow-button" href="index.html">🏠 Início</a>
+            </nav>
+            <div class="header-content">
+                <h1 class="main-title">Cadastro de Vendas</h1>
+                <p class="subtitle">Gerenciamento de Transações</p>
+                <div class="divider"></div>
+            </div>
+        </header>
+
+        <!-- Form Card -->
+        <div class="form-card glass-card">
+            <div class="card-header">
+                <h2 class="card-title">Nova Venda</h2>
+            </div>
+            <div class="card-content">
+                <form id="vendaForm">
+                    <input type="hidden" id="id">
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="dataVenda">Data da Venda</label>
+                            <input type="date" id="dataVenda" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="valorVenda">Valor da Venda</label>
+                            <input type="number" id="valorVenda" step="0.01" placeholder="0.00" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="valorComissao">Valor da Comissão</label>
+                            <input type="number" id="valorComissao" step="0.01" placeholder="0.00" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="carroId">Carro</label>
+                            <select id="carroId" required class="form-control"></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="clienteId">Cliente</label>
+                            <select id="clienteId" required class="form-control"></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="vendedorId">Vendedor</label>
+                            <select id="vendedorId" required class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary glow-button">
+                            <span class="btn-icon">💰</span> Salvar
+                        </button>
+                        <button type="button" class="btn btn-outline glow-button" onclick="limparForm()">
+                            <span class="btn-icon">🔄</span> Limpar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Table Card -->
+        <div class="table-card glass-card">
+            <div class="card-header">
+                <div class="table-header">
+                    <h2 class="card-title">Vendas Cadastradas</h2>
+                    <div class="badge" id="vendaCount">0 vendas</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="table-wrapper">
+                    <table id="vendasTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Data</th>
+                                <th>Valor</th>
+                                <th>Comissão</th>
+                                <th>Carro</th>
+                                <th>Cliente</th>
+                                <th>Vendedor</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaVendas">
+                            <!-- As vendas serao inseridas aqui pelo JavaScript -->
+                        </tbody>
+                    </table>
+                    <div id="emptyState" class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <h3>Nenhuma venda encontrada</h3>
+                        <p>Cadastre a primeira venda para come\u00e7ar</p>
+                    </div>
+                </div>
+                <!-- Elementos de pagina-->
+                <div id="pagination" class="pagination"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação para exclusão -->
+    <div id="confirmModal" class="confirmation-dialog hidden">
+        <h3>Confirmar exclusão da venda</h3>
+        <p>Tem certeza que deseja excluir esta venda?</p>
+        <div class="button-group">
+            <button id="confirmYes" class="btn btn-danger glow-button">Confirmar</button>
+            <button id="confirmNo" class="btn btn-outline glow-button">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- NOVO: Modal de Confirmação para cancelamento -->
+    <div id="cancelarVendaModal" class="confirmation-dialog hidden">
+        <h3>Confirmar Cancelamento de Venda</h3>
+        <p id="cancelarVendaMessage">Tem certeza que deseja cancelar esta venda?</p>
+        <div class="button-group">
+            <button id="confirmarCancelamentoBtn" class="btn btn-danger glow-button">Sim, Cancelar</button>
+            <button id="cancelarCancelamentoBtn" class="btn btn-outline glow-button">Não Cancelar</button>
+        </div>
+    </div>
+
+
+    <!-- Notificação de sucesso/erro -->
+    <div id="notification" class="notification hidden"></div>
+
+    <script src="../js/venda.js"></script>
+</body>
+
+</html>

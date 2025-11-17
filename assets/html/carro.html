@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>USACAR - Cadastro de Carros</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9I4YyT+9D3WzN1/9Pj5xVlV1B5V1b5Z5G4vVwY5oY5i125iA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+</head>
+
+<body>
+  <div class="container">
+    <header class="header">
+      <nav class="tabs">
+        <a class="btn btn-primary glow-button" href="index.html">🏠 Início</a>
+      </nav>
+      <div class="header-content">
+        <h1 class="main-title">Cadastro de Carros</h1>
+        <p class="subtitle">Sistema de Gerenciamento de Veículos</p>
+        <div class="divider"></div>
+      </div>
+    </header>
+
+    <div class="form-card glass-card">
+      <div class="card-header">
+        <h2 class="card-title">Cadastro de Carro</h2>
+      </div>
+      <div class="card-content">
+        <form id="carroForm">
+          <input type="hidden" id="carroId">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="placa">Placa</label>
+              <input type="text" id="placa" placeholder="ABC-1234" required />
+            </div>
+            <div class="form-group">
+              <label for="marcaId">Marca</label>
+              <select id="marcaId" required class="form-control"></select>
+            </div>
+            <div class="form-group">
+              <label for="modeloId">Modelo</label>
+              <select id="modeloId" required class="form-control"></select>
+            </div>
+            <div class="form-group">
+              <label for="anoFabricacao">Ano de Fabricação</label>
+              <input type="number" id="anoFabricacao" placeholder="Ex: 2023" required />
+            </div>
+            <div class="form-group">
+              <label for="anoModelo">Ano do Modelo</label>
+              <input type="number" id="anoModelo" placeholder="Ex: 2024" required />
+            </div>
+            <div class="form-group">
+              <label for="corId">Cor</label>
+              <select id="corId" required class="form-control"></select>
+            </div>
+            <div class="form-group">
+              <label for="km">KM</label>
+              <input type="number" id="km" placeholder="Ex: 15000" required />
+            </div>
+            <div class="form-group">
+              <label for="precoCompra">Preço de Compra (R$)</label>
+              <input type="number" id="precoCompra" step="0.01" placeholder="Ex: 75000.50" required />
+            </div>
+            <div class="form-group">
+              <label for="statusId">Status</label>
+              <select id="statusId" required class="form-control"></select>
+            </div>
+          </div>
+
+          <div class="button-group">
+            <button type="submit" class="btn btn-primary glow-button" id="salvarBtn">
+              <span class="btn-icon">🚗</span> Salvar
+            </button>
+            <button type="button" class="btn btn-secondary glow-button" onclick="buscarCarros()">
+              <span class="btn-icon">🔍</span> Pesquisar
+            </button>
+            <button type="button" class="btn btn-outline glow-button" onclick="limparFormulario()">
+              <span class="btn-icon">🔄</span> Limpar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="form-card glass-card">
+    </div>
+
+    <div class="table-card glass-card">
+      <div class="card-header">
+        <div class="table-header">
+          <h2 class="card-title">Carros Cadastrados</h2>
+          <div class="badge" id="carroCount">0 carros</div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="tabela-carros">
+          <table id="carrosTable">
+            <thead>
+              <tr>
+                <th>Placa</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Ano</th>
+                <th>Cor</th>
+                <th>KM</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-icon">🚘</div>
+            <h3>Nenhum carro encontrado</h3>
+            <p>Cadastre um novo carro para começar</p>
+          </div>
+        </div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="historicoModal" class="modal-backdrop hidden">
+    <div class="modal-dialog">
+      <h2 class="card-title">Histórico de Status do Carro</h2>
+      <div class="card-content">
+        <div class="table-wrapper">
+          <table class="w-full">
+            <thead>
+              <tr>
+                <th class="text-left">Data/Hora</th>
+                <th class="text-left">Status Anterior</th>
+                <th class="text-left">Novo Status</th>
+                <th class="text-left">Usuário</th>
+              </tr>
+            </thead>
+            <tbody id="historicoTableBody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <br />
+      <div class="button-group mt-4 flex justify-end">
+        <button id="closeHistoricoBtn" class="btn btn-outline glow-button">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="notification" class="notification hidden"></div>
+
+  <script src="../js/carro.js"></script>
+</body>
+
+</html>

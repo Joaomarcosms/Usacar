@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USACAR - Sistema de Gerenciamento</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Aba: Clientes -->
+        <div id="clientesTab" class="tab-content">
+        </div>
+
+        <!-- Aba: Relatório -->
+        <div id="relatorioTab" class="tab-content hidden">
+            <div class="form-card glass-card">
+                <div class="card-header">
+                    <h2 class="card-title">Relatório de Vendas por Vendedor</h2>
+                </div>
+                <div class="card-content">
+                    <form id="relatorioForm" onsubmit="gerarRelatorio(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="dataInicio">Data Início</label>
+                                <input type="date" id="dataInicio" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="dataFim">Data Fim</label>
+                                <input type="date" id="dataFim">
+                            </div>
+                        </div>
+                        <div class="button-group">
+                            <button type="submit" class="btn btn-primary glow-button">📄 Gerar Relatório</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="table-card glass-card">
+                <div class="card-header">
+                    <h2 class="card-title">Resultado</h2>
+                </div>
+                <div class="card-content">
+                    <div class="table-wrapper">
+                        <table id="relatorioTable">
+                            <thead>
+                                <tr>
+                                    <th>Vendedor</th>
+                                    <th>Quantidade de Vendas</th>
+                                    <th>Valor Total Vendido</th>
+                                    <th>Comissão Recebida</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <header class="header">
+            <!-- Navigation Tabs -->
+            <nav class="tabs">
+                <a class="btn btn-primary glow-button" href="index.html">🏠 Inicio</a>
+            </nav>
+            <div class="header-content">
+                <h1 class="main-title">Cadastro de Clientes</h1>
+                <p class="subtitle">Sistema de Gerenciamento de Clientes</p>
+                <div class="divider"></div>
+            </div>
+        </header>
+
+        <!-- Form Card -->
+        <div class="form-card glass-card">
+            <div class="card-header">
+                <h2 class="card-title">Cadastro de Cliente</h2>
+            </div>
+            <div class="card-content">
+                <form id="clienteForm">
+                    <input type="hidden" id="id"> <!-- Corrigido -->
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nome">Nome Completo</label>
+                            <input type="text" id="nome" placeholder="Digite o nome completo" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cpf">CPF (para cadastro e busca)</label>
+                            <input type="text" id="cpf" placeholder="000.000.000-00" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" placeholder="exemplo@email.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="telefone">Telefone</label>
+                            <input type="text" id="telefone" placeholder="(11) 99999-9999" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dataCadastro">Data de Cadastro</label>
+                            <input type="date" id="dataCadastro" required>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary glow-button">
+                            <span class="btn-icon">👤</span>
+                            Salvar
+                        </button>
+                        <button type="button" class="btn btn-secondary glow-button" onclick="searchCliente()">
+                            <span class="btn-icon">🔍</span>
+                            Pesquisar
+                        </button>
+                        <button type="button" class="btn btn-outline glow-button" onclick="clearForm()">
+                            <span class="btn-icon">🔄</span>
+                            Limpar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Table Card -->
+        <div class="table-card glass-card">
+            <div class="card-header">
+                <div class="table-header">
+                    <h2 class="card-title">Clientes Cadastrados</h2>
+                    <div class="badge" id="clienteCount">0 clientes</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="table-wrapper">
+                    <table id="clientesTable">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>CPF</th>
+                                <th>Email</th>
+                                <th>Telefone</th>
+                                <th>Data Cadastro</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div id="emptyState" class="empty-state">
+                        <div class="empty-icon">👥</div>
+                        <h3>Nenhum cliente encontrado</h3>
+                        <p>Cadastre o primeiro cliente para começar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="confirmModal" class="confirmation-dialog hidden">
+        <h3>Confirmar exclusão</h3>
+        <p>Tem certeza que deseja excluir este cliente?</p>
+        <div class="button-group">
+            <button id="confirmYes" class="btn btn-danger glow-button">Confirmar</button>
+            <button id="confirmNo" class="btn btn-outline glow-button">Cancelar</button>
+        </div>
+    </div>
+
+
+    <div id="notification" class="notification hidden"></div>
+
+    <script src="../js/cliente.js"></script>
+</body>
+
+</html>

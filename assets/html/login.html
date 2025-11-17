@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>USACAR - Login</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+
+<body>
+    <div class="container login-container">
+        <!-- Formulário de Login -->
+        <div class="form-card glass-card">
+            <div class="card-header">
+                <h1 class="main-title">Acessar Sistema</h1>
+            </div>
+            <div class="card-content">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" placeholder="seu.email@usacar.com" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="senha">Senha</label>
+                        <input type="password" id="senha" placeholder="••••••••" required />
+                    </div>
+                    <br />
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary glow-button">
+                            <span class="btn-icon">➔</span> Entrar
+                        </button>
+                    </div>
+                    <br />
+                    <div class="form-footer">
+                        <p>Não tem uma conta? <a href="cadastroUsuario.html">Cadastre-se</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de Notificação -->
+    <div id="notification" class="notification hidden"></div>
+
+    <script src="../js/login.js"></script>
+</body>
+
+</html>
